@@ -1,18 +1,11 @@
-import LocalStorage from '@/apis/LocalStorage';
-import IconAntd from '@/components/IconAntd';
-import CustomLoading from '@/components/Loading';
-import Container from '@/container/Container';
-import { wait } from '@/utils';
-import { Button, Col, message, PageHeader, Row, Spin } from 'antd';
+import { Col, Row } from 'antd';
 import React from 'react';
+import CountUp from 'react-countup';
 import styled from 'styled-components';
-import { homeService } from '../service';
 import card1 from '../../../../assets/card1.png';
 import card2 from '../../../../assets/card2.png';
 import card3 from '../../../../assets/card3.png';
-import Chart1 from '../components/Chart1';
-import ChartColumn from '../components/ChartColumn';
-
+import { homeService } from '../service';
 const HomePage = () => {
     const [isLoading, setIsLoadng] = React.useState<boolean>(false);
     const [posts, setPosts] = React.useState<number>();
@@ -47,7 +40,9 @@ const HomePage = () => {
                         <div className="info-block">
                             <p className="title">{item.title}</p>
                             <div className="statistic-block">
-                                <p className="statistic">{item.value}</p>
+                                <p className="statistic">
+                                    <CountUp end={item.value} />
+                                </p>
                             </div>
                         </div>
                         <div className="icon-block">
@@ -64,14 +59,10 @@ const HomePage = () => {
     const getData = async () => {
         try {
             setIsLoadng(true);
-            const res = await homeService.getData();
-            if (res.status) {
-                setPosts(res?.data?.news);
-                setTours(res?.data?.tour);
-                setCustomers(res?.data?.customer);
-            } else {
-                message.error('Đã có lỗi xảy ra!');
-            }
+            const res: any = await homeService.getData();
+            setPosts(res?.countNews);
+            setTours(res?.countTour);
+            setCustomers(res?.countUser);
         } catch (error) {
             console.log('ERROR: ', error);
         } finally {

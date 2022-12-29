@@ -1,5 +1,7 @@
 import ButtonSave from '@/components/Button/ButtonSave';
 import MyEditor from '@/components/Editor/EditorComponent';
+import FormComponent from '@/components/FormComponent';
+import FormItemComponent from '@/components/FormComponent/FormItemComponent';
 import CustomLoading from '@/components/Loading';
 import { openNotificationWithIcon } from '@/components/Notification';
 import UploadComponent from '@/components/UploadComponent';
@@ -91,6 +93,10 @@ const AddEditTour = () => {
         }
     };
 
+    const handleSubmit = (values: any) => {
+        console.log('🚀 ~ file: AddEditTour.tsx:97 ~ handleSubmit ~ values', values);
+    };
+
     return (
         <CustomLoading isLoading={isLoading}>
             <Container
@@ -104,9 +110,33 @@ const AddEditTour = () => {
                 }
                 contentComponent={
                     <CustomLoading isLoading={isLoading}>
-                        <div>
+                        <FormComponent onSubmit={handleSubmit}>
                             <Row gutter={[16, 16]}>
-                                <CustomCol span={12}>
+                                <FormItemComponent
+                                    grid
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Mã tour không được để trống',
+                                        },
+                                    ]}
+                                    name="title"
+                                    label="Mã tour"
+                                    inputField={<Input placeholder="Nhập mã tour" />}
+                                />
+                                <FormItemComponent
+                                    grid
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Tên tour không được để trống',
+                                        },
+                                    ]}
+                                    name="title"
+                                    label="Tên tour"
+                                    inputField={<Input placeholder="Nhập tên tour" />}
+                                />
+                                {/* <CustomCol span={12}>
                                     <div className="label-block">
                                         <p>
                                             Tên tour<span style={{ color: 'red' }}> *</span>
@@ -161,7 +191,8 @@ const AddEditTour = () => {
                                             />
                                         )}
                                     </div>
-                                </CustomCol>
+                                </CustomCol> */}
+
                                 <Col style={{ marginTop: 20 }} span={24}>
                                     <p>
                                         Nội dung bài viết<span style={{ color: 'red' }}> *</span>
@@ -184,7 +215,7 @@ const AddEditTour = () => {
                                     />
                                 </Col>
                             </Row>
-                        </div>
+                        </FormComponent>
                     </CustomLoading>
                 }
             />
