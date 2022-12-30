@@ -4,6 +4,7 @@ import TableComponent from '@/components/TableComponents';
 import { routerPage } from '@/config/routes';
 import Container from '@/container/Container';
 import useDebounce from '@/hooks/useDebounce';
+import { currencyFormat } from '@/utils';
 
 import { PageHeader, Tag } from 'antd';
 import moment from 'moment';
@@ -69,6 +70,7 @@ const TourPage = () => {
         {
             title: <b>Giá tour</b>,
             dataIndex: 'TourPrice',
+            render: (value: any) => currencyFormat(value),
         },
         {
             title: <b>Ngày khởi hành</b>,

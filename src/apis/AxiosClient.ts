@@ -58,7 +58,7 @@ AxiosClient.interceptors.response.use(
     },
     (error) => {
         // Handle errors
-        error?.response?.data?.message && Notification('error', error?.response?.data?.message);
+        // error?.response?.data?.message && Notification('error', error?.response?.data?.message);
         return error;
     }
 );

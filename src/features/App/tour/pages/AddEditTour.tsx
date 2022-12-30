@@ -7,7 +7,7 @@ import { openNotificationWithIcon } from '@/components/Notification';
 import UploadComponent from '@/components/UploadComponent';
 import { routerPage } from '@/config/routes';
 import Container from '@/container/Container';
-import { Col, Input, PageHeader, Row } from 'antd';
+import { Col, DatePicker, Input, PageHeader, Row } from 'antd';
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -136,6 +136,26 @@ const AddEditTour = () => {
                                     label="Tên tour"
                                     inputField={<Input placeholder="Nhập tên tour" />}
                                 />
+                                <FormItemComponent
+                                    grid
+                                    name="tour_price"
+                                    label="Giá tour (Người lớn)"
+                                    inputField={<Input placeholder="Nhập giá tour người lớn" />}
+                                />
+                                <FormItemComponent
+                                    grid
+                                    name="title"
+                                    label="Giá tour (Trẻ em)"
+                                    inputField={<Input placeholder="Nhập giá tour trẻ em" />}
+                                />
+                                <FormItemComponent
+                                    grid
+                                    name="title"
+                                    label="Thời gian khởi hành"
+                                    inputField={
+                                        <DatePicker style={{ width: '100%' }} placeholder="Chọn thời gian khởi hành" />
+                                    }
+                                />
                                 {/* <CustomCol span={12}>
                                     <div className="label-block">
                                         <p>
@@ -192,7 +212,39 @@ const AddEditTour = () => {
                                         )}
                                     </div>
                                 </CustomCol> */}
-
+                                <CustomCol span={10}>
+                                    <div className="label-block">
+                                        <p>
+                                            Hình ảnh<span style={{ color: 'red' }}> *</span>
+                                        </p>
+                                    </div>
+                                    <div className="input-block">
+                                        {listImages && (
+                                            <UploadComponent
+                                                isUploadServerWhenUploading
+                                                uploadType="single"
+                                                listType="picture-card"
+                                                isShowFileList
+                                                maxLength={1}
+                                                initialFiles={
+                                                    location?.state?.record
+                                                        ? [
+                                                              {
+                                                                  uid: '-1',
+                                                                  name: 'image.png',
+                                                                  status: 'done',
+                                                                  url: location?.state?.record?.imageUrl,
+                                                              },
+                                                          ]
+                                                        : []
+                                                }
+                                                onSuccessUpload={(url: any) => {
+                                                    setListImages(url.flat());
+                                                }}
+                                            />
+                                        )}
+                                    </div>
+                                </CustomCol>
                                 <Col style={{ marginTop: 20 }} span={24}>
                                     <p>
                                         Nội dung bài viết<span style={{ color: 'red' }}> *</span>

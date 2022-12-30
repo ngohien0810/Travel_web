@@ -1,11 +1,12 @@
 import CustomScrollbars from '@/components/CustomScrollbars';
 import UserInfo from '@/components/UserInfo';
 import { MenuFoldOutlined, MenuUnfoldOutlined, NotificationOutlined } from '@ant-design/icons';
-import { Menu, Row } from 'antd';
+import { Image, Menu, Row } from 'antd';
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { items } from './Sidebar.Menu';
+import logo from '../../assets/logo.png';
 
 const SidebarContent = ({
     collapsed,
@@ -22,16 +23,25 @@ const SidebarContent = ({
 
     return (
         <>
-            <Row align="middle" justify="start" className="gx-m-0 gx-py-5 gx-ml-4 gx-mb-3">
-                {!collapsed && <Link to="/">Chỗ này là LOGO</Link>}
-                {/* <div className="gx-linebar" onClick={handleCallbackCollapsed}>
+            {!collapsed && (
+                <Row
+                    align="middle"
+                    justify="center"
+                    style={{ borderBottom: '1px solid #e3e3e3', marginBottom: '20px' }}
+                >
+                    <span style={{ fontWeight: 'bold' }}>VietNam Travel</span>
+                    <Link to="/">
+                        <img src={logo} alt="logo" height={100} />
+                    </Link>
+                </Row>
+            )}
+            {/* <div className="gx-linebar" onClick={handleCallbackCollapsed}>
                     {collapsed ? (
                         <MenuUnfoldOutlined className="gx-icon-btn" />
                     ) : (
                         <MenuFoldOutlined className="gx-icon-btn" />
                     )}
                 </div> */}
-            </Row>
             <CustomScrollbars className="gx-layout-sider-scrollbar">
                 <MenuStyled
                     defaultOpenKeys={[defaultOpenKeys]}

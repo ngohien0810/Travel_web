@@ -30,6 +30,8 @@ const CategoryPage = () => {
         {
             title: <b>Trạng thái</b>,
             dataIndex: 'Status',
+            width: '200px',
+            align: 'center',
             render: (value: number, record: any) => {
                 return <Switch checked={value === 1} onChange={() => record.id} />;
             },
@@ -37,14 +39,16 @@ const CategoryPage = () => {
         {
             title: <b>Ngày tạo</b>,
             dataIndex: 'CreatedDate',
+            width: '200px',
+            align: 'center',
             render: (value: number, record: any) => {
                 return moment(value).format('DD/MM/YYYY');
             },
         },
-        {
-            title: <b>Chi tiết</b>,
-            dataIndex: 'title',
-        },
+        // {
+        //     title: <b>Chi tiết</b>,
+        //     dataIndex: 'title',
+        // },
     ];
     return (
         <div>

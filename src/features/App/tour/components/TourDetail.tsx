@@ -188,73 +188,89 @@ const TourDetail = (props: ITourDetail) => {
             actions={
                 currentTab === '1'
                     ? [
-                        <Button
-                            onClick={() =>
-                                navigate(routerPage.addEditTour, {
-                                    state: { id: record.id, record: record, title: record.tourName },
-                                })
-                            }
-                            type="text"
-                            size="large"
-                            style={{ color: 'green' }}
-                            icon={<IconAntd icon="EditOutlined" />}
-                            children={'Chỉnh sửa'}
-                        />,
-                        <Popconfirm
-                            title={
-                                record?.status === 1
-                                    ? 'Bạn có chắc chắn muốn ngừng hoạt động tour này?'
-                                    : 'Bạn có chắc chắn muốn mở lại hoạt động tour này?'
-                            }
-                            onConfirm={() => changeTourStatus(record.id)}
-                            okText={record?.status === 1 ? 'Ngừng' : 'Mở'}
-                            cancelText={'Đóng'}
-                        >
-                            <Button
-                                type="text"
-                                size="large"
-                                style={record?.status === 1 ? { color: '#f29891' } : { color: '#f0b83e' }}
-                                icon={
-                                    record?.status === 1 ? (
-                                        <IconAntd icon={'CloseCircleOutlined'} />
-                                    ) : (
-                                        <IconAntd icon={'CheckOutlined'} />
-                                    )
-                                }
-                                children={record?.status === 1 ? 'Ngừng hoạt động' : 'Mở hoạt động'}
-                            />
-                        </Popconfirm>,
-                        <Popconfirm
-                            title={'Bạn có chắc chắn muốn xoá tour này?'}
-                            onConfirm={() => deleteTour(record.id)}
-                            okText={'Xoá'}
-                            cancelText={'Đóng'}
-                        >
-                            <Button
-                                type="text"
-                                size="large"
-                                style={{ color: '#cc0000' }}
-                                icon={<IconAntd icon={'DeleteFilled'} />}
-                                children={'Xoá tour'}
-                            />
-                        </Popconfirm>,
-                    ]
+                          <Button
+                              onClick={() =>
+                                  navigate(routerPage.addEditTour, {
+                                      state: { id: record.id, record: record, title: record.tourName },
+                                  })
+                              }
+                              type="text"
+                              size="large"
+                              style={{ color: 'green' }}
+                              icon={<IconAntd icon="EditOutlined" />}
+                              children={'Chỉnh sửa'}
+                          />,
+                          <Popconfirm
+                              title={
+                                  record?.status === 1
+                                      ? 'Bạn có chắc chắn muốn ngừng hoạt động tour này?'
+                                      : 'Bạn có chắc chắn muốn mở lại hoạt động tour này?'
+                              }
+                              onConfirm={() => changeTourStatus(record.id)}
+                              okText={record?.status === 1 ? 'Ngừng' : 'Mở'}
+                              cancelText={'Đóng'}
+                          >
+                              <Button
+                                  type="text"
+                                  size="large"
+                                  style={record?.status === 1 ? { color: '#f29891' } : { color: '#f0b83e' }}
+                                  icon={
+                                      record?.status === 1 ? (
+                                          <IconAntd icon={'CloseCircleOutlined'} />
+                                      ) : (
+                                          <IconAntd icon={'CheckOutlined'} />
+                                      )
+                                  }
+                                  children={record?.status === 1 ? 'Ngừng hoạt động' : 'Mở hoạt động'}
+                              />
+                          </Popconfirm>,
+                          <Popconfirm
+                              title={'Bạn có chắc chắn muốn xoá tour này?'}
+                              onConfirm={() => deleteTour(record.id)}
+                              okText={'Xoá'}
+                              cancelText={'Đóng'}
+                          >
+                              <Button
+                                  type="text"
+                                  size="large"
+                                  style={{ color: '#cc0000' }}
+                                  icon={<IconAntd icon={'DeleteFilled'} />}
+                                  children={'Xoá tour'}
+                              />
+                          </Popconfirm>,
+                      ]
                     : []
             }
         >
             <Tabs style={{ backgroundColor: '#f6f9ff' }} defaultActiveKey="1" onChange={onChange}>
                 <TabPane tab={<span style={{ margin: 10 }}>Thông tin tour du lịch</span>} key="1">
                     <Descriptions bordered column={2}>
-                        <Descriptions.Item label="Mã tour">{record.tourName}</Descriptions.Item>
-                        <Descriptions.Item label="Giá tour(Người lớn)">{record.numberDestination}</Descriptions.Item>
-                        <Descriptions.Item label="Tên tour">{record.numberDestination}</Descriptions.Item>
-                        <Descriptions.Item label="Giá tour(Trẻ em)">{record.numberDestination}</Descriptions.Item>
-                        <Descriptions.Item label="Thời gian">{record.numberDestination}</Descriptions.Item>
-                        <Descriptions.Item label="Lượt đánh giá">{record.numberDestination}</Descriptions.Item>
-                        <Descriptions.Item label="Ngày khởi hành">{record.numberDestination}</Descriptions.Item>
-                        <Descriptions.Item label="Trạng thái">{record.numberDestination}</Descriptions.Item>
-                        <Descriptions.Item label="Tỉnh/thành phố">{record.numberDestination}</Descriptions.Item>
-                        <Descriptions.Item label="Ngày tạo">{record.numberDestination}</Descriptions.Item>
+                        <Descriptions.Item label="Mã tour">{record.tourName || 'TCCLVN'}</Descriptions.Item>
+                        <Descriptions.Item label="Giá tour(Người lớn)">
+                            {record.numberDestination || '320.000'}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Tên tour">
+                            {record.numberDestination || 'Trường ca của lửa và nước'}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Giá tour(Trẻ em)">
+                            {record.numberDestination || '230.000'}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Thời gian">
+                            {record.numberDestination || '4 ngày 3 đêm'}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Lượt đánh giá">{record.numberDestination || '2'}</Descriptions.Item>
+                        <Descriptions.Item label="Ngày khởi hành">
+                            {record.numberDestination || '2022-02-02 12:19'}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Trạng thái">
+                            {record.numberDestination || 'Đang hoạt động'}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Tỉnh/thành phố">
+                            {record.numberDestination || 'Bắc Giang'}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Ngày tạo">
+                            {record.numberDestination || '15/10/2022'}
+                        </Descriptions.Item>
                     </Descriptions>
                 </TabPane>
                 <TabPane tab={<span style={{ margin: 10 }}>Danh sách điểm đến</span>} key="2">
