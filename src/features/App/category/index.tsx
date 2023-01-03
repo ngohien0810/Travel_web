@@ -1,55 +1,73 @@
 import ButtonAdd from '@/components/Button/ButtonAdd';
 import TableComponent from '@/components/TableComponents';
 import Container from '@/container/Container';
-import { Input, PageHeader, Switch } from 'antd';
+import { Input, PageHeader, Switch, Button, Row } from 'antd';
 import React from 'react';
 import Icon from '@ant-design/icons';
 import { categoryService } from './service';
 import moment from 'moment';
+import ModalComponent from '@/components/ModalComponent';
+import FormComponent from '@/components/FormComponent';
+import FormItemComponent from '@/components/FormComponent/FormItemComponent';
+import { Notification } from '@/utils';
+
+const columns: any = (page: any) => [
+    {
+        width: '60px',
+        title: <b>STT</b>,
+        dataIndex: 'id',
+        align: 'center',
+        render: (row: any, record: any, index: number) => (page === 1 ? ++index : (page - 1) * 10 + ++index),
+    },
+    {
+        title: <b>Tên danh mục</b>,
+        dataIndex: 'Name',
+    },
+    {
+        title: <b>Trạng thái</b>,
+        dataIndex: 'Status',
+        width: '200px',
+        align: 'center',
+        render: (value: number, record: any) => {
+            return <Switch checked={value === 1} onChange={() => record.id} />;
+        },
+    },
+    {
+        title: <b>Ngày tạo</b>,
+        dataIndex: 'CreatedDate',
+        width: '200px',
+        align: 'center',
+        render: (value: number, record: any) => {
+            return moment(value).format('DD/MM/YYYY');
+        },
+    },
+];
+
 const CategoryPage = () => {
     const [categories, setCategories] = React.useState([]);
+    const [total, setTotal] = React.useState(0);
+    const [page, setPage] = React.useState(1);
+
+    const [search, setSearch] = React.useState('');
+
+    const [visible, setVisible] = React.useState(false);
+    const [callback, setCallback] = React.useState(false);
+
     React.useEffect(() => {
-        categoryService.getListCategory().then((res: any) => {
+        categoryService.getListCategory({ title: search, page }).then((res: any) => {
+            setTotal(res.totalItems);
             setCategories(res.data);
         });
-    }, []);
-    const columns: any = [
-        {
-            width: '60px',
-            title: <b>STT</b>,
-            dataIndex: 'id',
-            align: 'center',
-            // render: (text: any, record: any, index: any) => (
-            //     <td id={record.id}>{(paging.current - 1) * paging.pageSize + index + 1}</td>
-            // ),
-        },
-        {
-            title: <b>Tên danh mục</b>,
-            dataIndex: 'Name',
-        },
-        {
-            title: <b>Trạng thái</b>,
-            dataIndex: 'Status',
-            width: '200px',
-            align: 'center',
-            render: (value: number, record: any) => {
-                return <Switch checked={value === 1} onChange={() => record.id} />;
-            },
-        },
-        {
-            title: <b>Ngày tạo</b>,
-            dataIndex: 'CreatedDate',
-            width: '200px',
-            align: 'center',
-            render: (value: number, record: any) => {
-                return moment(value).format('DD/MM/YYYY');
-            },
-        },
-        // {
-        //     title: <b>Chi tiết</b>,
-        //     dataIndex: 'title',
-        // },
-    ];
+    }, [search, page, callback]);
+
+    const onSubmitForm = (values: any) => {
+        categoryService.createCategory({ ...values }).then((res: any) => {
+            Notification('success', 'Thêm mới thành công');
+            setCallback(!callback);
+            setVisible(false);
+        });
+    };
+
     return (
         <div>
             <Container
@@ -61,7 +79,7 @@ const CategoryPage = () => {
                             <ButtonAdd
                                 text="Thêm mới"
                                 onClickButton={() => {
-                                    // navigate(routerPage.addEditPost);
+                                    setVisible(true);
                                 }}
                             />,
                         ]}
@@ -73,24 +91,47 @@ const CategoryPage = () => {
                         style={{ width: '360px', margin: 0 }}
                         placeholder="Tên danh mục"
                         addonAfter={<Icon type="close-circle-o" />}
-                        // value={search}
-                        // onChange={(e: any) => {
-                        //     setSearch(e.target.value);
-                        // }}
+                        value={search}
+                        onChange={(e: any) => {
+                            setSearch(e.target.value);
+                        }}
                     />
                 }
                 contentComponent={
                     <TableComponent
                         showTotalResult
-                        columns={columns}
+                        columns={columns(page)}
                         dataSource={categories}
-                        // page={params.page}
-                        // total={paging.total}
+                        page={page}
+                        total={total}
                         // loading={isLoading}
-                        // onChangePage={(_page) => setParams({ ...params, page: _page })}
+                        onChangePage={(_page) => setPage(_page)}
                     />
                 }
             />
+
+            <ModalComponent modalVisible={visible} title="Thêm danh mục">
+                <FormComponent onSubmit={onSubmitForm}>
+                    <FormItemComponent
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng nhập tên danh mục',
+                            },
+                        ]}
+                        name="name"
+                        inputField={<Input placeholder="Tên danh mục" />}
+                        label="Tên danh mục"
+                    />
+
+                    <Row justify="end" className="gx-m-0">
+                        <Button>Đóng</Button>
+                        <Button htmlType="submit" type="primary">
+                            Lưu
+                        </Button>
+                    </Row>
+                </FormComponent>
+            </ModalComponent>
         </div>
     );
 };
