@@ -10,7 +10,7 @@ export interface IParams {
     category?: number;
     fromDate?: string;
     toDate?: string;
-    page?: number;
+    page: number;
     limit?: number;
 }
 

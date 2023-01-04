@@ -1,15 +1,14 @@
 import AxiosClient from '@/apis/AxiosClient';
 
-
 export const newsService = {
     getListNews: (payload: any) => {
-        return AxiosClient.get('/News/GetListNews', { params: payload });
+        return AxiosClient.get('/news', { params: payload });
     },
     deleteNews: (id: number) => {
-        return AxiosClient.post(`/News/DeleteNews/${id}`);
+        return AxiosClient.delete(`/news/${id}`);
     },
     getListCategories: () => {
-        return AxiosClient.get(`/Category/GetListCategory`);
+        return AxiosClient.get(`/categories`);
     },
     addNews: (payload: any) => {
         return AxiosClient.post(`/News/CreateNews`, payload);
