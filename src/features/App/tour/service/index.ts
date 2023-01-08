@@ -5,22 +5,22 @@ export const tourService = {
         return AxiosClient.get('/tours', { params: payload });
     },
     addTour: (payload: any) => {
-        return AxiosClient.post(`/Tour/CreateTour`, payload);
+        return AxiosClient.post(`/tours`, payload);
     },
-    updateTour: (payload: any) => {
-        return AxiosClient.post(`/Tour/UpdateTour`, payload);
+    updateTour: (payload: any, id: any) => {
+        return AxiosClient.put(`/tours/${id}`, payload);
     },
     deleteTour: (id: number) => {
-        return AxiosClient.post(`/Tour/DeleteTour/${id}`);
+        return AxiosClient.delete(`/tours/${id}`);
     },
     changeTourStatus: (id: number) => {
         return AxiosClient.post(`/Tour/ChangeStatus/${id}`);
     },
     getDestinations: (payload: any) => {
-        return AxiosClient.get('/Destination/GetListDestination', { params: payload });
+        return AxiosClient.get('/tours/destination', { params: payload });
     },
     deleteDestination: (id: number) => {
-        return AxiosClient.post(`/Destination/DeleteDestination/${id}`);
+        return AxiosClient.delete(`/tours/destination/${id}`);
     },
     addDestination: (payload: any) => {
         return AxiosClient.post(`/Destination/CreateDestination`, payload);

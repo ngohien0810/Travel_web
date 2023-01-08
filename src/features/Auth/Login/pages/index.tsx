@@ -1,6 +1,6 @@
 import LocalStorage from '@/apis/LocalStorage';
 import { colors, PHONE_REGEX } from '@/constant';
-import { enterNumbersOnly, wait } from '@/utils';
+import { enterNumbersOnly, Notification, wait } from '@/utils';
 import { Button, Form, Input, Row, Spin } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
@@ -24,8 +24,8 @@ const LoginPage = () => {
             if (res?.status) {
                 // LocalStorage.setToken(`${res?.data?.token}`);
                 LocalStorage.setLogged(res?.user?.id);
-
-                wait(100).then(() => {
+                Notification('success', 'Đăng nhập thành công');
+                wait(400).then(() => {
                     window.location.reload();
                 });
             }

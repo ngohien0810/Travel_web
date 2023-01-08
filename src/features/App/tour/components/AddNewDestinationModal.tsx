@@ -1,5 +1,5 @@
 import UploadComponent from '@/components/UploadComponent';
-import { Col, Input, InputNumber, Modal, Row } from 'antd';
+import { Button, Col, Input, InputNumber, Modal, Row, Space } from 'antd';
 import MyEditor from '@/components/Editor/EditorComponent';
 import React from 'react';
 import styled from 'styled-components';
@@ -7,6 +7,7 @@ import CustomLoading from '@/components/Loading';
 import { tourService } from '../service';
 import { openNotificationWithIcon } from '@/components/Notification';
 import { IDestinationDetail } from './Interface';
+import GoogleMapReact from 'google-map-react';
 
 interface IAddNewDestinationModal {
     isModalOpen: boolean;
@@ -18,6 +19,36 @@ interface IAddNewDestinationModal {
     currentRecord: any;
     setCurrentRecord: React.Dispatch<any>;
 }
+
+const Wrapper = styled.div`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    user-select: none;
+    border-radius: 50% 50% 50% 0;
+    border: 4px solid red;
+    width: 20px;
+    height: 20px;
+    transform: rotate(-45deg);
+    cursor: ${(props) => (props.onClick ? 'pointer' : 'default')};
+    &:hover {
+        z-index: 1;
+    }
+    &::after {
+        position: absolute;
+        content: '';
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        margin-left: -5px;
+        margin-top: -5px;
+        background-color: black;
+    }
+`;
+
+const Marker = ({ text, onClick }: any) => <Wrapper alt={text} onClick={onClick} />;
 
 const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
     const {
@@ -43,6 +74,19 @@ const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
     const [isIndexError, setIsIndexError] = React.useState<boolean>(false);
     const [listImages, setListImages] = React.useState<any[]>([]);
     const [listVideos, setListVideos] = React.useState<any[]>([]);
+
+    const defaultProps = {
+        center: {
+            lat: 21.028511,
+            lng: 105.804817,
+        },
+        zoom: 15,
+    };
+
+    const [places, setPlaces] = React.useState({
+        lat: 21.028511,
+        lng: 105.804817,
+    });
 
     const addUpdateDestination = async () => {
         try {
@@ -107,135 +151,129 @@ const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
                 title={currentRecord ? 'Sửa địa điểm' : 'Thêm điểm đến mới'}
                 open={isModalOpen}
                 centered
-                onCancel={() => {
-                    setIsModalOpen(false);
-                    setCurrentRecord(null);
-                }}
                 cancelText="Đóng"
                 okText="Lưu"
-                width={'60%'}
-                onOk={addUpdateDestination}
+                width={'80%'}
+                footer={null}
+                bodyStyle={{ paddingTop: '0' }}
+                closable={false}
             >
-                <Row>
-                    <Col span={12}>
-                        <p>
-                            Tên điểm đến<span style={{ color: 'red' }}> *</span>
-                        </p>
-                        <Input
-                            allowClear
-                            style={{ width: '100%' }}
-                            placeholder="Tên điểm đến"
-                            value={desName}
-                            onChange={(e: any) => {
-                                if (e.target.value !== '') {
-                                    setIsDesNameError(false);
-                                } else setIsDesNameError(true);
-                                setDesName(e?.target?.value);
+                <Row justify="end">
+                    <Space style={{ padding: '10px 20px' }}>
+                        <Button
+                            onClick={() => {
+                                setIsModalOpen(false);
+                                setCurrentRecord(null);
                             }}
-                            status={isDesNameError ? 'error' : undefined}
-                        />
-                    </Col>
-                    <Col span={12}>
-                        <p>
-                            Thứ tự hiển thị<span style={{ color: 'red' }}> *</span>
-                        </p>
-                        <InputNumber
-                            style={{ width: '100%' }}
-                            placeholder="Thứ tự hiển thị"
-                            min={1}
-                            value={index}
-                            onChange={(value: number | null) => {
-                                console.log('Value: ', value);
-                                if (value) {
-                                    setIsIndexError(false);
-                                } else setIsIndexError(true);
-                                setIndex(value);
-                            }}
-                            status={isIndexError ? 'error' : undefined}
-                        />
-                    </Col>
+                        >
+                            Đóng
+                        </Button>
+                        <Button onClick={addUpdateDestination} type="primary">
+                            Lưu
+                        </Button>
+                    </Space>
                 </Row>
                 <MarginedRow>
-                    <Col span={24}>
-                        <p>
-                            Địa chỉ Google Map<span style={{ color: 'red' }}> *</span>
-                        </p>
-                        <Input
-                            allowClear
-                            style={{ width: '100%' }}
-                            placeholder="Địa chỉ điểm đến"
-                            value={mapUrl}
-                            onChange={(e: any) => {
-                                if (e.target.value !== '') {
-                                    setIsMapUrlError(false);
-                                } else setIsMapUrlError(true);
-                                setMapUrl(e?.target?.value);
-                            }}
-                            status={isMapUrlError ? 'error' : undefined}
-                        />
+                    <Col span={18}>
+                        <div style={{ height: '400px' }}>
+                            <GoogleMapReact
+                                bootstrapURLKeys={{ key: 'AIzaSyBnQuI2W5DyQVHJZpOXqiyODTG_d7dkPfk' }}
+                                defaultCenter={defaultProps.center}
+                                defaultZoom={defaultProps.zoom}
+                                yesIWantToUseGoogleMapApiInternals
+                                onClick={(e) => {
+                                    setPlaces({
+                                        lat: e.lat,
+                                        lng: e.lng,
+                                    });
+                                }}
+                            >
+                                <Marker text="My Marker" lat={places.lat} lng={places.lng} />
+                            </GoogleMapReact>
+                        </div>
                     </Col>
-                </MarginedRow>
-                <MarginedRow>
-                    <Col span={12}>
-                        <p>
-                            Hình ảnh<span style={{ color: 'red' }}> *</span>
-                        </p>
-                        <UploadComponent
-                            isUploadServerWhenUploading
-                            uploadType="single"
-                            listType="picture-card"
-                            maxLength={1}
-                            initialFiles={
-                                currentRecord
-                                    ? [
-                                          {
-                                              uid: currentId,
-                                              name: 'image.png',
-                                              status: 'done',
-                                              url: listImages[0],
-                                          },
-                                      ]
-                                    : []
-                            }
-                            onSuccessUpload={(url: any) => {
-                                setListImages(url.flat());
-                            }}
-                        />
-                    </Col>
-                    <Col span={12}>
-                        <p>
-                            Video<span style={{ color: 'red' }}> *</span>
-                            <span style={{ color: '#bbbdbc', fontSize: 12 }}>
-                                {' '}
-                                (Dung lượng tối đa của video là 20MB)
+                    <Col span={6}>
+                        <Row gutter={[12, 12]}>
+                            <Col span={24}>
+                                <span>
+                                    Tên điểm đến<span style={{ color: 'red' }}> *</span>
+                                </span>
+                                <Input
+                                    allowClear
+                                    style={{ width: '100%', marginTop: '6px' }}
+                                    placeholder="Tên điểm đến"
+                                    value={desName}
+                                    onChange={(e: any) => {
+                                        if (e.target.value !== '') {
+                                            setIsDesNameError(false);
+                                        } else setIsDesNameError(true);
+                                        setDesName(e?.target?.value);
+                                    }}
+                                    status={isDesNameError ? 'error' : undefined}
+                                />
+                            </Col>
+                            <Col span={24}>
+                                <span>
+                                    Thứ tự hiển thị<span style={{ color: 'red' }}> *</span>
+                                </span>
+                                <InputNumber
+                                    style={{ width: '100%', marginTop: '6px' }}
+                                    placeholder="Thứ tự hiển thị"
+                                    min={1}
+                                    value={index}
+                                    onChange={(value: number | null) => {
+                                        console.log('Value: ', value);
+                                        if (value) {
+                                            setIsIndexError(false);
+                                        } else setIsIndexError(true);
+                                        setIndex(value);
+                                    }}
+                                    status={isIndexError ? 'error' : undefined}
+                                />
+                            </Col>
+                        </Row>
+                        <div style={{ marginTop: '10px' }}>
+                            <span>
+                                Hình ảnh<span style={{ color: 'red' }}> *</span>
                             </span>
-                        </p>
-
-                        <UploadComponent
-                            accept=".mp4"
-                            isUploadServerWhenUploading
-                            uploadType="single"
-                            listType="picture-card"
-                            maxLength={1}
-                            initialFiles={
-                                currentRecord
-                                    ? [
-                                          {
-                                              uid: currentId,
-                                              name: 'video.mp4',
-                                              status: 'done',
-                                              url: listVideos[0],
-                                          },
-                                      ]
-                                    : []
-                            }
-                            onSuccessUpload={(url: any) => {
-                                setListVideos(url.flat());
-                            }}
-                        />
+                            <UploadComponent
+                                isUploadServerWhenUploading
+                                uploadType="single"
+                                listType="picture-card"
+                                maxLength={1}
+                                initialFiles={
+                                    currentRecord
+                                        ? [
+                                              {
+                                                  uid: currentId,
+                                                  name: 'image.png',
+                                                  status: 'done',
+                                                  url: listImages[0],
+                                              },
+                                          ]
+                                        : []
+                                }
+                                onSuccessUpload={(url: any) => {
+                                    setListImages(url.flat());
+                                }}
+                            />
+                        </div>
+                        <div style={{ marginTop: '10px' }}>
+                            <span>Địa chỉ</span>
+                            <div style={{ marginTop: '10px' }}>
+                                <div>
+                                    Lat:
+                                    <p style={{ fontWeight: 'bold' }}> {places?.lat}</p>
+                                </div>
+                                <div>
+                                    Lng:
+                                    <p style={{ fontWeight: 'bold' }}> {places?.lng}</p>
+                                </div>
+                            </div>
+                        </div>
                     </Col>
-                    <Col span={12}></Col>
                 </MarginedRow>
+
                 <MarginedRow>
                     <Col span={24}>
                         <MyEditor
@@ -259,8 +297,6 @@ const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
     );
 };
 
-const MarginedRow = styled(Row)`
-    margin-top: 20px;
-`;
+const MarginedRow = styled(Row)``;
 
 export default AddNewDestinationModal;

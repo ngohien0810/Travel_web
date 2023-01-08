@@ -42,7 +42,7 @@ const TourPage = () => {
     const [fromDate, setFromDate] = React.useState<string>();
     const [toDate, setToDate] = React.useState<string>();
     const [params, setParams] = React.useState<any>({
-        searchKey: '',
+        search: '',
         page: 1,
         limit: 10,
         fromDate: '',
@@ -84,7 +84,7 @@ const TourPage = () => {
         },
         {
             title: <b>Trạng thái</b>,
-            dataIndex: 'status',
+            dataIndex: 'Status',
             align: 'center',
             render: (value: number) => {
                 if (value === 1) {
@@ -156,7 +156,7 @@ const TourPage = () => {
     React.useEffect(() => {
         setParams({
             ...params,
-            searchKey: searchDebounce,
+            search: searchDebounce,
             fromDate: fromDate,
             toDate: toDate,
             status: status,

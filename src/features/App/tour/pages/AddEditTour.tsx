@@ -4,10 +4,12 @@ import FormComponent from '@/components/FormComponent';
 import FormItemComponent from '@/components/FormComponent/FormItemComponent';
 import CustomLoading from '@/components/Loading';
 import { openNotificationWithIcon } from '@/components/Notification';
+import UploadCloundComponent from '@/components/Upload';
 import UploadComponent from '@/components/UploadComponent';
 import { routerPage } from '@/config/routes';
 import Container from '@/container/Container';
-import { Col, DatePicker, Input, PageHeader, Row } from 'antd';
+import { Col, DatePicker, Input, PageHeader, Row, Form } from 'antd';
+import moment from 'moment';
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -17,73 +19,43 @@ const AddEditTour = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
+    const [form] = Form.useForm();
+
     const [isLoading, setisLoading] = React.useState<boolean>(false);
-    const [listImages, setListImages] = React.useState<any[]>(
-        location?.state?.record ? [location?.state?.record?.imageUrl] : []
-    );
+
     const [isAllSpace, setIsAllSpace] = React.useState<boolean>(false);
-    const [tourName, setTourName] = React.useState<string>(location?.state?.record?.tourName);
-    const [isTourNameError, setIsTourNameError] = React.useState<boolean>(false);
     const [description, setDescription] = React.useState<string>(location?.state?.record?.description);
 
-    const validateValue = () => {
-        if (!tourName || tourName === '') {
-            openNotificationWithIcon('error', 'Thất bại', 'Vui lòng nhập tiêu đề bài viết!');
-            setIsTourNameError(true);
-            return false;
-        } else {
-            setIsTourNameError(false);
-        }
+    const fileEdit = React.useRef<any>(null);
 
-        if (!listImages || listImages.length === 0) {
-            openNotificationWithIcon('error', 'Thất bại', 'Vui lòng chọn ảnh bìa cho bài viết!');
-            return false;
-        }
-
-        if (!description || description === '<p></p>') {
-            openNotificationWithIcon('error', 'Thất bại', 'Vui lòng nhập nội dung bài viết!');
-            return false;
-        }
-        if (isAllSpace) {
-            openNotificationWithIcon('error', 'Thất bại', 'Nội dung bài viết không thể là khoảng trắng!');
-            return false;
-        }
-        return true;
-    };
-
-    const addEditTour = async () => {
+    const handleSubmit = async (values: any) => {
+        const payload = {
+            Code: values.Code,
+            ImageUrl: typeof values?.imageUrl !== 'string' ? values?.imageUrl[0]?.url : values?.imageUrl,
+            Title: values.Title,
+            Description: description,
+            TourPrice: values?.TourPrice,
+            DateStartTour: moment(values?.DateStartTour).format('YYYY-MM-DD HH:mm'),
+        };
         try {
             setisLoading(true);
-            if (validateValue()) {
-                if (location?.state?.id) {
-                    // Cập nhật
-                    const payload = {
-                        imageUrl: listImages[0],
-                        title: tourName,
-                        description: description,
-                        id: location?.state?.id,
-                    };
-                    const res = await tourService.updateTour(payload);
-                    if (res.status) {
-                        openNotificationWithIcon('success', 'Thành công', 'Cập nhật tour thành công!');
-                        navigate(routerPage.tour);
-                    } else {
-                        openNotificationWithIcon('error', 'Thất bại', 'Cập nhật tour thất bại!');
-                    }
+            if (location?.state?.id) {
+                // Cập nhật
+                const res = await tourService.updateTour(payload, location?.state?.id);
+                if (res) {
+                    openNotificationWithIcon('success', 'Thành công', 'Cập nhật tour thành công!');
+                    navigate(routerPage.tour);
                 } else {
-                    // Thêm mới
-                    const payload = {
-                        imageUrl: listImages[0],
-                        title: tourName,
-                        description: description,
-                    };
-                    const res = await tourService.addTour(payload);
-                    if (res.status) {
-                        openNotificationWithIcon('success', 'Thành công', 'Thêm tour mới thành công!');
-                        navigate(routerPage.tour);
-                    } else {
-                        openNotificationWithIcon('error', 'Thất bại', 'Thêm tour mới thất bại!');
-                    }
+                    openNotificationWithIcon('error', 'Thất bại', 'Cập nhật tour thất bại!');
+                }
+            } else {
+                // Thêm mới
+                const res = await tourService.addTour(payload);
+                if (res) {
+                    openNotificationWithIcon('success', 'Thành công', 'Thêm tour mới thành công!');
+                    navigate(routerPage.tour);
+                } else {
+                    openNotificationWithIcon('error', 'Thất bại', 'Thêm tour mới thất bại!');
                 }
             }
         } catch (error) {
@@ -93,24 +65,43 @@ const AddEditTour = () => {
         }
     };
 
-    const handleSubmit = (values: any) => {
-        console.log('🚀 ~ file: AddEditTour.tsx:97 ~ handleSubmit ~ values', values);
-    };
+    React.useEffect(() => {
+        if (location?.state?.id) {
+            fileEdit.current = [
+                {
+                    uid: location?.state?.record?.ImageUrl,
+                    url: location?.state?.record?.ImageUrl,
+                },
+            ];
+            form.setFieldsValue({
+                Code: location?.state?.record?.Code,
+                Title: location?.state?.record?.Title,
+                TourPrice: location?.state?.record?.TourPrice,
+                DateStartTour: moment(location?.state?.record?.DateStartTour),
+                imageUrl: [
+                    {
+                        uid: location?.state?.record?.ImageUrl,
+                        url: location?.state?.record?.ImageUrl,
+                    },
+                ],
+            });
+        }
+    }, [location?.state?.id]);
 
     return (
         <CustomLoading isLoading={isLoading}>
-            <Container
-                header={
-                    <PageHeader
-                        onBack={() => navigate(routerPage.tour)}
-                        style={{ borderRadius: 8 }}
-                        title={location?.state?.id ? 'Chỉnh sửa tour' : 'Thêm tour mới'}
-                        extra={[<ButtonSave text="Lưu" onClickButton={addEditTour} />]}
-                    />
-                }
-                contentComponent={
-                    <CustomLoading isLoading={isLoading}>
-                        <FormComponent onSubmit={handleSubmit}>
+            <FormComponent form={form} onSubmit={handleSubmit}>
+                <Container
+                    header={
+                        <PageHeader
+                            onBack={() => navigate(routerPage.tour)}
+                            style={{ borderRadius: 8 }}
+                            title={location?.state?.id ? 'Chỉnh sửa tour' : 'Thêm tour mới'}
+                            extra={[<ButtonSave text="Lưu" htmlType="submit" />]}
+                        />
+                    }
+                    contentComponent={
+                        <CustomLoading isLoading={isLoading}>
                             <Row gutter={[16, 16]}>
                                 <FormItemComponent
                                     grid
@@ -120,7 +111,7 @@ const AddEditTour = () => {
                                             message: 'Mã tour không được để trống',
                                         },
                                     ]}
-                                    name="title"
+                                    name="Code"
                                     label="Mã tour"
                                     inputField={<Input placeholder="Nhập mã tour" />}
                                 />
@@ -132,126 +123,77 @@ const AddEditTour = () => {
                                             message: 'Tên tour không được để trống',
                                         },
                                     ]}
-                                    name="title"
+                                    name="Title"
                                     label="Tên tour"
                                     inputField={<Input placeholder="Nhập tên tour" />}
                                 />
                                 <FormItemComponent
                                     grid
-                                    name="tour_price"
-                                    label="Giá tour (Người lớn)"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Tên tour không được để trống',
+                                        },
+                                    ]}
+                                    name="TourPrice"
+                                    label="Giá tour"
                                     inputField={<Input placeholder="Nhập giá tour người lớn" />}
                                 />
-                                <FormItemComponent
+                                {/* <FormItemComponent
                                     grid
                                     name="title"
                                     label="Giá tour (Trẻ em)"
                                     inputField={<Input placeholder="Nhập giá tour trẻ em" />}
-                                />
+                                /> */}
                                 <FormItemComponent
                                     grid
-                                    name="title"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Tên tour không được để trống',
+                                        },
+                                    ]}
+                                    name="DateStartTour"
                                     label="Thời gian khởi hành"
                                     inputField={
-                                        <DatePicker style={{ width: '100%' }} placeholder="Chọn thời gian khởi hành" />
+                                        <DatePicker
+                                            format="HH:mm DD/MM/YYYY"
+                                            style={{ width: '100%' }}
+                                            placeholder="Chọn thời gian khởi hành"
+                                        />
                                     }
                                 />
-                                {/* <CustomCol span={12}>
-                                    <div className="label-block">
-                                        <p>
-                                            Tên tour<span style={{ color: 'red' }}> *</span>
-                                        </p>
-                                    </div>
-                                    <div className="input-block">
-                                        <Input
-                                            allowClear
-                                            style={{ width: '100%' }}
-                                            placeholder="Tiều đề bài viết"
-                                            value={tourName}
-                                            onChange={(e: any) => {
-                                                if (e.target.value !== '') {
-                                                    setIsTourNameError(false);
-                                                } else setIsTourNameError(true);
-                                                setTourName(e?.target?.value);
+
+                                <FormItemComponent
+                                    grid
+                                    name="imageUrl"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Tên tour không được để trống',
+                                        },
+                                    ]}
+                                    label="Hình ảnh"
+                                    inputField={
+                                        <UploadCloundComponent
+                                            isUploadServerWhenUploading
+                                            initialFile={fileEdit.current}
+                                            uploadType="list"
+                                            listType="picture-card"
+                                            maxLength={1}
+                                            onSuccessUpload={(url: any) => {
+                                                url && form.setFieldsValue({ imageUrl: url?.url });
                                             }}
-                                            status={isTourNameError ? 'error' : undefined}
                                         />
-                                    </div>
-                                </CustomCol>
-                                <CustomCol span={2} />
-                                <CustomCol span={10}>
-                                    <div className="label-block">
-                                        <p>
-                                            Hình ảnh<span style={{ color: 'red' }}> *</span>
-                                        </p>
-                                    </div>
-                                    <div className="input-block">
-                                        {listImages && (
-                                            <UploadComponent
-                                                isUploadServerWhenUploading
-                                                uploadType="single"
-                                                listType="picture-card"
-                                                isShowFileList
-                                                maxLength={1}
-                                                initialFiles={
-                                                    location?.state?.record
-                                                        ? [
-                                                              {
-                                                                  uid: '-1',
-                                                                  name: 'image.png',
-                                                                  status: 'done',
-                                                                  url: location?.state?.record?.imageUrl,
-                                                              },
-                                                          ]
-                                                        : []
-                                                }
-                                                onSuccessUpload={(url: any) => {
-                                                    setListImages(url.flat());
-                                                }}
-                                            />
-                                        )}
-                                    </div>
-                                </CustomCol> */}
-                                <CustomCol span={10}>
-                                    <div className="label-block">
-                                        <p>
-                                            Hình ảnh<span style={{ color: 'red' }}> *</span>
-                                        </p>
-                                    </div>
-                                    <div className="input-block">
-                                        {listImages && (
-                                            <UploadComponent
-                                                isUploadServerWhenUploading
-                                                uploadType="single"
-                                                listType="picture-card"
-                                                isShowFileList
-                                                maxLength={1}
-                                                initialFiles={
-                                                    location?.state?.record
-                                                        ? [
-                                                              {
-                                                                  uid: '-1',
-                                                                  name: 'image.png',
-                                                                  status: 'done',
-                                                                  url: location?.state?.record?.imageUrl,
-                                                              },
-                                                          ]
-                                                        : []
-                                                }
-                                                onSuccessUpload={(url: any) => {
-                                                    setListImages(url.flat());
-                                                }}
-                                            />
-                                        )}
-                                    </div>
-                                </CustomCol>
+                                    }
+                                />
                                 <Col style={{ marginTop: 20 }} span={24}>
                                     <p>
                                         Nội dung bài viết<span style={{ color: 'red' }}> *</span>
                                     </p>
                                     <MyEditor
                                         defaultValue={
-                                            location?.state?.record ? location?.state?.record?.description : ''
+                                            location?.state?.record ? location?.state?.record?.Description : ''
                                         }
                                         logData={(value) => {
                                             setDescription(value);
@@ -267,10 +209,10 @@ const AddEditTour = () => {
                                     />
                                 </Col>
                             </Row>
-                        </FormComponent>
-                    </CustomLoading>
-                }
-            />
+                        </CustomLoading>
+                    }
+                />
+            </FormComponent>
         </CustomLoading>
     );
 };

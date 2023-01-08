@@ -2,6 +2,7 @@ import ButtonSave from '@/components/Button/ButtonSave';
 import MyEditor from '@/components/Editor/EditorComponent';
 import CustomLoading from '@/components/Loading';
 import { openNotificationWithIcon } from '@/components/Notification';
+import UploadCloundComponent from '@/components/Upload';
 import UploadComponent from '@/components/UploadComponent';
 import { routerPage } from '@/config/routes';
 import Container from '@/container/Container';
@@ -31,6 +32,10 @@ const AddEditPost = () => {
     const [isHomeChosen, setIsHomeChosen] = React.useState<boolean>(false);
     const [isHomeDisplayed, setIsHomeDisplayed] = React.useState<number>(0);
 
+    const [fileUpload, setFileUpload] = React.useState<any>(null);
+    console.log('🚀 ~ file: AddEditPost.tsx:36 ~ AddEditPost ~ fileUpload', fileUpload);
+    const fileEdit = React.useRef<any>(null);
+
     const validateValue = () => {
         if (!title || title === '') {
             openNotificationWithIcon('error', 'Thất bại', 'Vui lòng nhập tiêu đề bài viết!');
@@ -47,7 +52,7 @@ const AddEditPost = () => {
         } else {
             setIsCategoriesError(false);
         }
-        if (!listImages || listImages.length === 0) {
+        if (!fileUpload) {
             openNotificationWithIcon('error', 'Thất bại', 'Vui lòng chọn ảnh bìa cho bài viết!');
             return false;
         }
@@ -66,10 +71,10 @@ const AddEditPost = () => {
     const getListCategories = async () => {
         try {
             const res = await newsService.getListCategories();
-            if (res.status) {
+            if (res) {
                 const data = res?.data?.map((item: any) => ({
                     id: item.id,
-                    title: item.name,
+                    title: item.Name,
                 }));
                 setCategories(data);
             }
@@ -82,17 +87,18 @@ const AddEditPost = () => {
         try {
             setisLoading(true);
             const res = await newsService.getNewsDetail(location?.state?.id);
-            if (res.status) {
-                setTitle(res?.data?.title);
-                setCategoryIds(res?.data?.listCategory.map((item: any) => item.id));
-                setIsHotNews(res?.data?.hotNew);
-                setIsHomeDisplayed(res?.data?.isHome);
-                setDescription(res?.data?.description);
-                setListImages([res?.data?.imageUrl]);
-                const checkNewsChosen = res?.data?.listCategory.filter((item: any) => item.id === 1);
-                setIsNewsChosen(checkNewsChosen.length === 0 ? false : true);
-                const checkHomeDisplayed = res?.data?.listCategory.filter((item: any) => item.id === 13);
-                setIsHomeChosen(checkHomeDisplayed.length === 0 ? false : true);
+            if (res) {
+                setTitle(res?.data?.Title);
+                setCategoryIds(res?.data?.CategoryID);
+                setIsHomeDisplayed(res?.data?.IsHome);
+                setDescription(res?.data?.Description);
+                setFileUpload(res?.data?.ImageUrl);
+                fileEdit.current = [
+                    {
+                        uid: res?.data?.ImageUrl,
+                        url: res?.data?.ImageUrl,
+                    },
+                ];
             } else {
                 openNotificationWithIcon('error', 'Thất bại', 'Đã có lỗi xảy ra!');
             }
@@ -104,41 +110,28 @@ const AddEditPost = () => {
     };
 
     const addEditNews = async () => {
+        const payload = {
+            ImageUrl: fileUpload,
+            Title: title,
+            IsHome: isHomeDisplayed ? 1 : 0,
+            Description: description,
+            CategoryID: categoryIds,
+        };
         try {
             setisLoading(true);
             if (validateValue()) {
                 // Cập nhật
                 if (location?.state?.id) {
-                    const payload = {
-                        imageUrl: listImages[0],
-                        title: title,
-                        hotNew: isHotNews ? 1 : 0,
-                        IsHome: isHomeDisplayed ? 1 : 0,
-                        description: description,
-                        userID: 0,
-                        listCategory: categoryIds,
-                        id: location?.state?.id,
-                    };
-                    const res = await newsService.updateNews(payload);
-                    if (res.status) {
+                    const res = await newsService.updateNews(payload, location?.state?.id);
+                    if (res) {
                         openNotificationWithIcon('success', 'Thành công', 'Cập nhật bài viết thành công!');
                         navigate(routerPage.post);
                     } else {
                         openNotificationWithIcon('error', 'Thất bại', 'Cập nhật bài viết thất bại!');
                     }
                 } else {
-                    // Thêm mới
-                    const payload = {
-                        imageUrl: listImages[0],
-                        title: title,
-                        hotNew: isHotNews ? 1 : 0,
-                        IsHome: isHomeDisplayed ? 1 : 0,
-                        description: description,
-                        userID: 0,
-                        listCategory: categoryIds,
-                    };
                     const res = await newsService.addNews(payload);
-                    if (res.status) {
+                    if (res) {
                         openNotificationWithIcon('success', 'Thành công', 'Thêm bài viết mới thành công!');
                         navigate(routerPage.post);
                     } else {
@@ -209,25 +202,10 @@ const AddEditPost = () => {
                                             style={{ width: '100%' }}
                                             value={categoryIds}
                                             placeholder="Chọn danh mục"
-                                            mode="multiple"
+                                            // mode="multiple"
                                             allowClear
                                             onChange={(value: number[]) => {
-                                                if (value.length === 0) {
-                                                    setIsCategoriesError(true);
-                                                } else setIsCategoriesError(false);
                                                 setCategoryIds(value);
-                                                if (value.includes(1)) {
-                                                    setIsNewsChosen(true);
-                                                } else {
-                                                    setIsNewsChosen(false);
-                                                    setIsHotNews(0);
-                                                }
-                                                if (value.includes(13)) {
-                                                    setIsHomeChosen(true);
-                                                } else {
-                                                    setIsHomeChosen(false);
-                                                    setIsHomeDisplayed(0);
-                                                }
                                             }}
                                             status={isCategoriesError ? 'error' : undefined}
                                         >
@@ -246,7 +224,7 @@ const AddEditPost = () => {
                                         </p>
                                     </div>
                                     <div className="input-block">
-                                        <UploadComponent
+                                        {/* <UploadComponent
                                             isUploadServerWhenUploading
                                             uploadType="single"
                                             listType="picture-card"
@@ -265,6 +243,17 @@ const AddEditPost = () => {
                                             }
                                             onSuccessUpload={(url: any) => {
                                                 setListImages(url.flat());
+                                            }}
+                                        /> */}
+
+                                        <UploadCloundComponent
+                                            isUploadServerWhenUploading
+                                            initialFile={fileEdit.current}
+                                            uploadType="list"
+                                            listType="picture-card"
+                                            maxLength={1}
+                                            onSuccessUpload={(url: any) => {
+                                                url && setFileUpload(url.url);
                                             }}
                                         />
                                     </div>

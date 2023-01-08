@@ -11,16 +11,16 @@ export const newsService = {
         return AxiosClient.get(`/categories`);
     },
     addNews: (payload: any) => {
-        return AxiosClient.post(`/News/CreateNews`, payload);
+        return AxiosClient.post(`news`, payload);
     },
-    updateNews: (payload: any) => {
-        return AxiosClient.post(`/News/UpdateNews`, payload);
+    updateNews: (payload: any, id: any) => {
+        return AxiosClient.put(`news/${id}`, payload);
     },
     uploadImageToServer: (payload: any) => {
         return AxiosClient.post('/UploadFile/UploadFile', payload);
     },
     getNewsDetail: (id: number) => {
-        return AxiosClient.get(`/News/GetNewsDetail/${id}`);
+        return AxiosClient.get(`/news/${id}`);
     },
     changeNewsStatus: (id: number) => {
         return AxiosClient.post(`/News/ChangeStatusNews/${id}`);

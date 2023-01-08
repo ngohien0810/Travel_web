@@ -1,46 +1,40 @@
-import IconAntd from '@/components/IconAntd';
-import { Button, Card, Col, Descriptions, Input, Popconfirm, Row, Switch, Table, Tabs, Tag } from 'antd';
-import TabPane from 'antd/lib/tabs/TabPane';
-import Icon from '@ant-design/icons';
 import ButtonAdd from '@/components/Button/ButtonAdd';
-import React from 'react';
-import { IPaging } from '../pages';
-import { useNavigate, useNavigation } from 'react-router-dom';
-import { routerPage } from '@/config/routes';
-import AddNewDestinationModal from './AddNewDestinationModal';
-import { tourService } from '../service';
-import useDebounce from '@/hooks/useDebounce';
+import IconAntd from '@/components/IconAntd';
 import { openNotificationWithIcon } from '@/components/Notification';
-import { IDestinationDetail, IParam, ITourDetail } from './Interface';
-
+import { routerPage } from '@/config/routes';
+import useDebounce from '@/hooks/useDebounce';
+import { currencyFormat } from '@/utils';
+import Icon from '@ant-design/icons';
+import { Button, Card, Col, Descriptions, Input, Popconfirm, Row, Switch, Table, Tabs } from 'antd';
+import TabPane from 'antd/lib/tabs/TabPane';
+import moment from 'moment';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { IPaging } from '../pages';
+import { tourService } from '../service';
+import AddNewDestinationModal from './AddNewDestinationModal';
+import { ITourDetail } from './Interface';
 const TourDetail = (props: ITourDetail) => {
     const navigate = useNavigate();
     const { record, changeTourStatus, getTours, currentTourId } = props;
+    console.log('🚀 ~ file: TourDetail.tsx:19 ~ TourDetail ~ record', record);
     const [search, setSearch] = React.useState<string>('');
     const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
     const [currentId, setCurrentId] = React.useState<number>();
     const [currentRecord, setCurrentRecord] = React.useState<any>();
     const [destinationList, setDestinationList] = React.useState<any[]>([]);
     const [currentTab, setCurrentTab] = React.useState<string>('1');
-    const [paging, setPaging] = React.useState<IPaging>({
-        total: 0,
-        current: 1,
-        pageSize: 12,
-    });
-    const [params, setParams] = React.useState<IParam>({
-        IDTour: record.id,
-        SearchKey: '',
-        page: 1,
-        limit: 10,
+
+    const [params, setParams] = React.useState<any>({
+        tour_id: record.id,
+        searc: '',
     });
     const searchDebounce = useDebounce(search, 300);
     const columns = [
         {
             title: <b>STT</b>,
             dataIndex: 'stt',
-            render: (text: any, record: any, index: any) => (
-                <td id={record.id}>{(paging.current - 1) * paging.pageSize + (index + 1)}</td>
-            ),
+            render: (text: any, record: any, index: any) => index,
         },
         {
             title: <b>Tên địa điểm</b>,
@@ -60,6 +54,9 @@ const TourDetail = (props: ITourDetail) => {
         {
             title: <b>Ngày tạo</b>,
             dataIndex: 'date',
+            render: (value: string) => {
+                return moment(value).format('DD/MM/YYYY');
+            },
         },
         {
             title: <b>Thao tác</b>,
@@ -104,23 +101,18 @@ const TourDetail = (props: ITourDetail) => {
     const getDestinationList = async () => {
         try {
             const res = await tourService.getDestinations(params);
-            if (res.status) {
-                const data = res?.data?.data?.map((item: any) => {
+            if (res) {
+                const data = res?.data?.map((item: any) => {
                     return {
                         ...item,
                         id: item.id,
-                        destinationName: item.name,
-                        numberLove: item.favouriteCount,
-                        status: item.status,
-                        date: item.createDate,
+                        destinationName: item.Name,
+                        numberLove: item?.favouriteCount || 0,
+                        status: item.Status,
+                        date: item.CreatedDate,
                     };
                 });
                 setDestinationList(data);
-                setPaging({
-                    ...paging,
-                    current: res?.data?.data?.page || 1,
-                    total: res?.data?.data?.totalItemCount,
-                });
             }
         } catch (error) {
             console.log('ERROR: ', error);
@@ -130,7 +122,7 @@ const TourDetail = (props: ITourDetail) => {
     const deleteDestination = async (id: number) => {
         try {
             const res = await tourService.deleteDestination(id);
-            if (res.status) {
+            if (res) {
                 openNotificationWithIcon('success', 'Thành công', 'Xoá điểm đến thành công!');
                 getDestinationList();
                 getTours();
@@ -145,7 +137,7 @@ const TourDetail = (props: ITourDetail) => {
     const deleteTour = async (id: number) => {
         try {
             const res = await tourService.deleteTour(id);
-            if (res.status) {
+            if (res) {
                 openNotificationWithIcon('success', 'Thành công', 'Xoá tour thành công!');
                 getTours();
             } else {
@@ -174,7 +166,7 @@ const TourDetail = (props: ITourDetail) => {
     React.useEffect(() => {
         setParams({
             ...params,
-            SearchKey: searchDebounce,
+            search: searchDebounce,
         });
     }, [searchDebounce]);
 
@@ -202,26 +194,26 @@ const TourDetail = (props: ITourDetail) => {
                           />,
                           <Popconfirm
                               title={
-                                  record?.status === 1
+                                  record?.Status === 1
                                       ? 'Bạn có chắc chắn muốn ngừng hoạt động tour này?'
                                       : 'Bạn có chắc chắn muốn mở lại hoạt động tour này?'
                               }
                               onConfirm={() => changeTourStatus(record.id)}
-                              okText={record?.status === 1 ? 'Ngừng' : 'Mở'}
+                              okText={record?.Status === 1 ? 'Ngừng' : 'Mở'}
                               cancelText={'Đóng'}
                           >
                               <Button
                                   type="text"
                                   size="large"
-                                  style={record?.status === 1 ? { color: '#f29891' } : { color: '#f0b83e' }}
+                                  style={record?.Status === 1 ? { color: '#f29891' } : { color: '#f0b83e' }}
                                   icon={
-                                      record?.status === 1 ? (
+                                      record?.Status === 1 ? (
                                           <IconAntd icon={'CloseCircleOutlined'} />
                                       ) : (
                                           <IconAntd icon={'CheckOutlined'} />
                                       )
                                   }
-                                  children={record?.status === 1 ? 'Ngừng hoạt động' : 'Mở hoạt động'}
+                                  children={record?.Status === 1 ? 'Ngừng hoạt động' : 'Mở hoạt động'}
                               />
                           </Popconfirm>,
                           <Popconfirm
@@ -245,31 +237,25 @@ const TourDetail = (props: ITourDetail) => {
             <Tabs style={{ backgroundColor: '#f6f9ff' }} defaultActiveKey="1" onChange={onChange}>
                 <TabPane tab={<span style={{ margin: 10 }}>Thông tin tour du lịch</span>} key="1">
                     <Descriptions bordered column={2}>
-                        <Descriptions.Item label="Mã tour">{record.tourName || 'TCCLVN'}</Descriptions.Item>
+                        <Descriptions.Item label="Mã tour">{record.Code || '--'}</Descriptions.Item>
                         <Descriptions.Item label="Giá tour(Người lớn)">
-                            {record.numberDestination || '320.000'}
+                            {currencyFormat(record.TourPrice) || '--'}
                         </Descriptions.Item>
-                        <Descriptions.Item label="Tên tour">
-                            {record.numberDestination || 'Trường ca của lửa và nước'}
-                        </Descriptions.Item>
+                        <Descriptions.Item label="Tên tour">{record.Title || '--'}</Descriptions.Item>
                         <Descriptions.Item label="Giá tour(Trẻ em)">
-                            {record.numberDestination || '230.000'}
+                            {currencyFormat(record.TourPrice / 2) || '--'}
                         </Descriptions.Item>
-                        <Descriptions.Item label="Thời gian">
-                            {record.numberDestination || '4 ngày 3 đêm'}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Lượt đánh giá">{record.numberDestination || '2'}</Descriptions.Item>
-                        <Descriptions.Item label="Ngày khởi hành">
-                            {record.numberDestination || '2022-02-02 12:19'}
-                        </Descriptions.Item>
+                        <Descriptions.Item label="Thời gian">{record.numberDestination || '--'}</Descriptions.Item>
+                        <Descriptions.Item label="Lượt đánh giá">{record.feedbacks.length || '--'}</Descriptions.Item>
+                        <Descriptions.Item label="Ngày khởi hành">{record.DateStartTour || '--'}</Descriptions.Item>
                         <Descriptions.Item label="Trạng thái">
-                            {record.numberDestination || 'Đang hoạt động'}
+                            {record.Status ? 'Đang hoạt động' : 'Ngưng hoạt động'}
                         </Descriptions.Item>
-                        <Descriptions.Item label="Tỉnh/thành phố">
+                        {/* <Descriptions.Item label="Tỉnh/thành phố">
                             {record.numberDestination || 'Bắc Giang'}
-                        </Descriptions.Item>
+                        </Descriptions.Item> */}
                         <Descriptions.Item label="Ngày tạo">
-                            {record.numberDestination || '15/10/2022'}
+                            {moment(record.CreatedDate).format('DD/MM/YYYY') || '--'}
                         </Descriptions.Item>
                     </Descriptions>
                 </TabPane>
@@ -312,15 +298,7 @@ const TourDetail = (props: ITourDetail) => {
                                 locale={{
                                     emptyText: 'Chưa có bản ghi nào!',
                                 }}
-                                pagination={{
-                                    ...paging,
-                                    showSizeChanger: false,
-                                    onChange: async (page, pageSize) => {
-                                        setParams({ ...params, page });
-                                        const element: any = document.getElementById('top-table');
-                                        element.scrollIntoView({ block: 'start' });
-                                    },
-                                }}
+                                pagination={false}
                             />
                         </Col>
                     </Row>
