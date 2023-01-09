@@ -2,7 +2,7 @@ import AxiosClient from '@/apis/AxiosClient';
 
 export const accountService = {
     getListAccounts: (payload: any) => {
-        return AxiosClient.get('/User/GetListUser', { params: payload });
+        return AxiosClient.get('/accounts', { params: payload });
     },
     changeStatus: (id: number) => {
         return AxiosClient.post(`/User/ChangeStatus/${id}`);

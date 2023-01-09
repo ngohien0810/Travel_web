@@ -1,13 +1,10 @@
 import AxiosClient from '@/apis/AxiosClient';
 
-
 export const customerService = {
     getListCustomers: (payload: any) => {
-        return AxiosClient.get('/Customer/GetListCustomer', { params: payload });
+        return AxiosClient.get('/users', { params: payload });
     },
-    changeStatus: (id: number) => {
-        return AxiosClient.post(`/Customer/ChangeStatus/${id}`,);
+    changeStatus: (id: number, payload: any) => {
+        return AxiosClient.patch(`/users/${id}`, payload);
     },
-    
-
 };

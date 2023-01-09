@@ -68,20 +68,7 @@ const OrdersPage = () => {
     return (
         <div>
             <Container
-                header={
-                    <PageHeader
-                        style={{ borderRadius: 8 }}
-                        title="Danh sách đơn hàng"
-                        extra={[
-                            <ButtonAdd
-                                text="Thêm mới"
-                                onClickButton={() => {
-                                    // navigate(routerPage.addEditPost);
-                                }}
-                            />,
-                        ]}
-                    />
-                }
+                header={<PageHeader style={{ borderRadius: 8 }} title="Danh sách đơn hàng" />}
                 filterComponent={
                     <Input.Search
                         allowClear

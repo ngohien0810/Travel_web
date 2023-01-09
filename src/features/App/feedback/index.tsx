@@ -66,20 +66,7 @@ const FeedbackPage = () => {
     return (
         <div>
             <Container
-                header={
-                    <PageHeader
-                        style={{ borderRadius: 8 }}
-                        title="Danh sách phản hồi"
-                        extra={[
-                            <ButtonAdd
-                                text="Thêm mới"
-                                onClickButton={() => {
-                                    // navigate(routerPage.addEditPost);
-                                }}
-                            />,
-                        ]}
-                    />
-                }
+                header={<PageHeader style={{ borderRadius: 8 }} title="Danh sách phản hồi" />}
                 filterComponent={
                     <Input.Search
                         allowClear

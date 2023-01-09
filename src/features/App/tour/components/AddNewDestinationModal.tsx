@@ -8,6 +8,7 @@ import { tourService } from '../service';
 import { openNotificationWithIcon } from '@/components/Notification';
 import { IDestinationDetail } from './Interface';
 import GoogleMapReact from 'google-map-react';
+import UploadCloundComponent from '@/components/Upload';
 
 interface IAddNewDestinationModal {
     isModalOpen: boolean;
@@ -67,13 +68,12 @@ const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
     const [desName, setDesName] = React.useState<string>();
     const [isDesNameError, setIsDesNameError] = React.useState<boolean>(false);
     const [description, setDescription] = React.useState<string>();
-    const [isDesError, setIsDesError] = React.useState<boolean>(false);
     const [mapUrl, setMapUrl] = React.useState<string>();
-    const [isMapUrlError, setIsMapUrlError] = React.useState<boolean>(false);
     const [index, setIndex] = React.useState<number | null>();
     const [isIndexError, setIsIndexError] = React.useState<boolean>(false);
-    const [listImages, setListImages] = React.useState<any[]>([]);
-    const [listVideos, setListVideos] = React.useState<any[]>([]);
+
+    const [fileUpload, setFileUpload] = React.useState<any>(null);
+    const fileEdit = React.useRef<any>(null);
 
     const defaultProps = {
         center: {
@@ -89,21 +89,22 @@ const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
     });
 
     const addUpdateDestination = async () => {
+        const payload = {
+            Name: desName,
+            OrderIndex: index,
+            MapUrl: '',
+            ImageUrl: fileUpload,
+            Description: description,
+            TourID: currentTourId,
+            Longtitude: places.lng,
+            Latitude: places.lat,
+        };
         try {
             setIsLoading(true);
             if (!currentRecord) {
                 // Thêm mới
-                const payload = {
-                    name: desName,
-                    orderIndex: index,
-                    mapUrl,
-                    imageUrl: listImages[0],
-                    videoUrl: listVideos[0],
-                    description,
-                    tourID: currentTourId,
-                };
                 const res = await tourService.addDestination(payload);
-                if (res.status) {
+                if (res?.status) {
                     openNotificationWithIcon('success', 'Thành công', 'Thêm địa điểm mới thành công!');
                     getDestinationList();
                     setIsModalOpen(false);
@@ -111,18 +112,8 @@ const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
                 }
             } else {
                 // Cập nhật
-                const payload = {
-                    name: desName,
-                    orderIndex: index,
-                    mapUrl,
-                    imageUrl: listImages[0],
-                    videoUrl: listVideos[0],
-                    description,
-                    tourID: currentTourId,
-                    id: currentRecord?.id,
-                };
-                const res = await tourService.updateDestination(payload);
-                if (res.status) {
+                const res = await tourService.updateDestination(payload, currentRecord?.id);
+                if (res?.status) {
                     openNotificationWithIcon('success', 'Thành công', 'Cập nhật địa điểm thành công!');
                     getDestinationList();
                     setIsModalOpen(false);
@@ -137,12 +128,20 @@ const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
     };
 
     React.useEffect(() => {
+        fileEdit.current = [
+            {
+                uuid: currentRecord?.ImageUrl,
+                url: currentRecord?.ImageUrl,
+            },
+        ];
         setDesName(currentRecord?.destinationName);
-        setIndex(currentRecord?.orderIndex);
-        setMapUrl(currentRecord?.mapUrl);
-        setDescription(currentRecord?.description);
-        setListImages([currentRecord?.imageUrl]);
-        setListVideos([currentRecord?.videoUrl]);
+        setIndex(currentRecord?.OrderIndex);
+        setMapUrl(currentRecord?.MapUrl);
+        setDescription(currentRecord?.Description);
+        setPlaces({
+            lat: currentRecord?.Latitude,
+            lng: currentRecord?.Longtitude,
+        });
     }, [currentRecord]);
 
     return (
@@ -236,7 +235,7 @@ const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
                             <span>
                                 Hình ảnh<span style={{ color: 'red' }}> *</span>
                             </span>
-                            <UploadComponent
+                            {/* <UploadComponent
                                 isUploadServerWhenUploading
                                 uploadType="single"
                                 listType="picture-card"
@@ -255,6 +254,16 @@ const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
                                 }
                                 onSuccessUpload={(url: any) => {
                                     setListImages(url.flat());
+                                }}
+                            /> */}
+                            <UploadCloundComponent
+                                isUploadServerWhenUploading
+                                initialFile={fileEdit.current}
+                                uploadType="list"
+                                listType="picture-card"
+                                maxLength={1}
+                                onSuccessUpload={(url: any) => {
+                                    url && setFileUpload(url?.url);
                                 }}
                             />
                         </div>

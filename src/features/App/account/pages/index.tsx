@@ -6,6 +6,7 @@ import TableComponent from '@/components/TableComponents';
 import Container from '@/container/Container';
 import useDebounce from '@/hooks/useDebounce';
 import { message, Modal, PageHeader, Popconfirm, Spin, Switch, Table } from 'antd';
+import moment from 'moment';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IPaging } from '../../tour/pages';
@@ -15,14 +16,14 @@ import { ICustomer, IParams } from '../components/Interface';
 import { accountService } from '../service';
 
 const AccountPage = () => {
-    const columns = [
+    const columns: any = [
         {
             width: '70px',
             title: <b>STT</b>,
             dataIndex: 'stt',
-            render: (text: any, record: any, index: any) => (
-                <td id={record.id}>{(paging.current - 1) * paging.pageSize + index + 1}</td>
-            ),
+            align: 'center',
+            render: (row: any, record: any, index: number) =>
+                params.page === 1 ? ++index : (params.page - 1) * 10 + ++index,
         },
         {
             title: <b>Họ và tên</b>,
@@ -36,6 +37,7 @@ const AccountPage = () => {
         {
             title: <b>Ngày tạo</b>,
             dataIndex: 'date',
+            render: (value: string) => moment(value).format('DD/MM/YYYY'),
         },
         {
             title: <b>Trạng thái</b>,
@@ -102,13 +104,9 @@ const AccountPage = () => {
     const [toDate, setToDate] = React.useState<string>();
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const [currentPage, setCurrentPage] = React.useState<number>(1);
-    const [paging, setPaging] = React.useState<IPaging>({
-        total: 0,
-        current: currentPage,
-        pageSize: 10,
-    });
-    const [params, setParams] = React.useState<IParams>({
-        searchKey: '',
+    const [total, setTotal] = React.useState<any>(0);
+    const [params, setParams] = React.useState<any>({
+        search: '',
         page: 1,
         fromDate: '',
         toDate: '',
@@ -119,25 +117,20 @@ const AccountPage = () => {
     const getListAccounts = async () => {
         try {
             setIsLoading(true);
-            const res = await accountService.getListAccounts(params);
-            if (res.status) {
-                const data = res?.data?.data?.map((item: any) => {
+            const res: any = await accountService.getListAccounts(params);
+            if (res) {
+                const data = res?.data?.map((item: any) => {
                     return {
                         id: item?.id,
-                        name: item?.username,
-                        phone: item?.phone,
-                        email: item?.email,
-                        date: item?.createdDate.slice(0, 10).split('-').reverse().join('-'),
-                        status: item?.status,
+                        name: item?.Username,
+                        phone: item?.Phone,
+                        email: item?.Email,
+                        date: item?.CreatedDate,
+                        status: item?.Status,
                     };
                 });
                 setListAccounts(data);
-                setPaging({
-                    ...paging,
-                    total: res?.data?.totalItemCount,
-                    current: res?.data?.page,
-                    pageSize: 10,
-                });
+                setTotal(res?.totalItems);
             }
         } catch (error) {
             console.log('ERROR: ', error);
@@ -202,7 +195,7 @@ const AccountPage = () => {
     React.useEffect(() => {
         setParams({
             ...params,
-            searchKey: searchDebounce,
+            search: searchDebounce,
             status: status,
             fromDate: fromDate,
             toDate: toDate,
@@ -267,7 +260,7 @@ const AccountPage = () => {
                             columns={columns}
                             dataSource={listAccounts}
                             page={params.page}
-                            total={paging.total}
+                            total={total}
                             loading={isLoading}
                             onChangePage={(_page) => setParams({ ...params, page: _page })}
                         />

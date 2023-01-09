@@ -27,14 +27,15 @@ const TourDetail = (props: ITourDetail) => {
 
     const [params, setParams] = React.useState<any>({
         tour_id: record.id,
-        searc: '',
+        search: '',
     });
     const searchDebounce = useDebounce(search, 300);
-    const columns = [
+    const columns: any = [
         {
             title: <b>STT</b>,
             dataIndex: 'stt',
-            render: (text: any, record: any, index: any) => index,
+            align: 'center',
+            render: (text: any, record: any, index: any) => index + 1,
         },
         {
             title: <b>Tên địa điểm</b>,
@@ -43,6 +44,16 @@ const TourDetail = (props: ITourDetail) => {
         {
             title: <b>Lượt yêu thích</b>,
             dataIndex: 'numberLove',
+        },
+        {
+            title: <b>Longtitude</b>,
+            dataIndex: 'Longtitude',
+            align: 'center',
+        },
+        {
+            title: <b>Latitude</b>,
+            dataIndex: 'Latitude',
+            align: 'center',
         },
         {
             title: <b>Trạng thái</b>,

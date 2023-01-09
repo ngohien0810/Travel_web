@@ -23,10 +23,10 @@ export const tourService = {
         return AxiosClient.delete(`/tours/destination/${id}`);
     },
     addDestination: (payload: any) => {
-        return AxiosClient.post(`/Destination/CreateDestination`, payload);
+        return AxiosClient.post(`/tours/destination`, payload);
     },
-    updateDestination: (payload: any) => {
-        return AxiosClient.post(`/Destination/UpdateDestination`, payload);
+    updateDestination: (payload: any, id: any) => {
+        return AxiosClient.put(`/tours/destination/${id}`, payload);
     },
     changeDesStatus: (id: number) => {
         // return AxiosClient.post(`/Destination/ChangeStatus`, {params: {ID: id}})

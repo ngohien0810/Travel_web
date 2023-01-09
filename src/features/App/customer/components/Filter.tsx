@@ -60,7 +60,7 @@ const Filter = (props: IFilter) => {
                     <Select.Option value={0}>Ngừng hoạt động</Select.Option>
                 </Select>
             </Col>
-            <Col span={8}>
+            {/* <Col span={8}>
                 <DatePicker.RangePicker
                     style={{ width: '100%' }}
                     format={'DD/MM/YYYY'}
@@ -70,7 +70,7 @@ const Filter = (props: IFilter) => {
                         setToDate(dateString[1]);
                     }}
                 />
-            </Col>
+            </Col> */}
         </Row>
     );
 };

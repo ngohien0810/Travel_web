@@ -51,9 +51,9 @@ const CustomerPage = () => {
             width: '70px',
             title: <b>STT</b>,
             dataIndex: 'stt',
-            render: (text: any, record: any, index: any) => (
-                <td id={record.id}>{(paging.current - 1) * paging.pageSize + index + 1}</td>
-            ),
+            align: 'center',
+            render: (row: any, record: any, index: number) =>
+                params.page === 1 ? ++index : (params.page - 1) * 10 + ++index,
         },
         {
             title: <b>Tên khách hàng</b>,
@@ -75,14 +75,14 @@ const CustomerPage = () => {
         {
             title: <b>Ngày tạo</b>,
             dataIndex: 'date',
-            // render: (value: any) => moment(value).format('DD/MM/YYYY'),
+            render: (value: any) => moment(value).format('DD/MM/YYYY'),
         },
         {
             title: <b>Trạng thái</b>,
             dataIndex: 'status',
             align: 'center',
             render: (value: number, record: any) => {
-                return <Switch checked={value === 1} onChange={() => changeStatus(record.id)} />;
+                return <Switch checked={value === 1} onChange={(check) => changeStatus(record.id, check)} />;
             },
         },
 
@@ -123,13 +123,10 @@ const CustomerPage = () => {
     const [toDate, setToDate] = React.useState<string>();
     const [isLoading, setisLoading] = React.useState<boolean>(false);
     const [currentPage, setCurrentPage] = React.useState<number>(1);
-    const [paging, setPaging] = React.useState<IPaging>({
-        total: 0,
-        current: currentPage,
-        pageSize: 10,
-    });
-    const [params, setParams] = React.useState<IParams>({
-        searchKey: '',
+    const [total, setTotal] = React.useState<any>(0);
+    const [page, setPage] = React.useState<number>(1);
+    const [params, setParams] = React.useState<any>({
+        search: '',
         page: 1,
         fromDate: '',
         toDate: '',
@@ -140,26 +137,21 @@ const CustomerPage = () => {
     const getListCustomers = async () => {
         try {
             setisLoading(true);
-            const res = await customerService.getListCustomers(params);
-            if (res.status) {
-                const data = res?.data?.data?.map((item: any) => {
+            const res: any = await customerService.getListCustomers(params);
+            if (res) {
+                const data = res?.data?.map((item: any) => {
                     return {
                         id: item?.id,
-                        name: item?.name || '---',
-                        phone: item?.phone || '---',
-                        email: item?.email || '---',
-                        address: item?.address || '---',
-                        date: item?.createDate || '---',
-                        status: item?.status,
+                        name: item?.Name || '---',
+                        phone: item?.Phone || '---',
+                        email: item?.Email || '---',
+                        address: item?.Address || '---',
+                        date: item?.CreatedDate || '---',
+                        status: item?.Status,
                     };
                 });
                 setListCustomers(data);
-                setPaging({
-                    ...paging,
-                    total: res?.data?.totalItemCount,
-                    current: res?.data?.page,
-                    pageSize: 10,
-                });
+                setTotal(res?.totalItems);
             }
         } catch (error) {
             console.log('ERROR: ', error);
@@ -168,10 +160,12 @@ const CustomerPage = () => {
         }
     };
 
-    const changeStatus = async (id: number) => {
+    const changeStatus = async (id: number, value: any) => {
         try {
             setisLoading(true);
-            const res = await customerService.changeStatus(id);
+            const res = await customerService.changeStatus(id, {
+                Status: value,
+            });
             if (res.status) {
                 openNotificationWithIcon('success', 'Thành công', 'Thay đổi trạng thái người dùng thành công!');
                 getListCustomers();
@@ -190,7 +184,7 @@ const CustomerPage = () => {
     React.useEffect(() => {
         setParams({
             ...params,
-            searchKey: searchDebounce,
+            search: searchDebounce,
             status: status,
             fromDate: fromDate,
             toDate: toDate,
@@ -236,41 +230,11 @@ const CustomerPage = () => {
                         columns={columns}
                         dataSource={listCustomers}
                         page={params.page}
-                        total={paging.total}
+                        total={total}
                         loading={isLoading}
                         onChangePage={(_page) => setParams({ ...params, page: _page })}
                     />
                 }
-                // <CustomLoading isLoading={isLoading}>
-                //     <div>
-                //         <p>
-                //             Kết quả lọc: <b>{paging.total}</b>
-                //         </p>
-                //         <Table
-                //             bordered
-                //             columns={columns}
-                //             dataSource={listCustomers}
-                //             scroll={{
-                //                 x: 1200,
-                //                 scrollToFirstRowOnChange: true,
-                //             }}
-                //             locale={{
-                //                 emptyText: 'Chưa có bản ghi nào!',
-                //             }}
-                //             pagination={{
-                //                 ...paging,
-                //                 showSizeChanger: false,
-                //                 onChange: async (page) => {
-                //                     setParams({ ...params, page });
-                //                     setCurrentPage(page);
-                //                     const element: any = document.getElementById('top-table');
-                //                     element.scrollIntoView({ block: 'start' });
-                //                 },
-                //             }}
-                //         />
-                //         <AddEditModal isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal} />
-                //     </div>
-                // </CustomLoading>
             />
             <AddEditModal isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal} />
         </>
