@@ -18,8 +18,8 @@ import { newsService } from '../service';
 
 const PostPage = () => {
     const navigate = useNavigate();
-    const [params, setParams] = React.useState<IParams>({
-        searchKey: '',
+    const [params, setParams] = React.useState<any>({
+        search: '',
         page: 1,
         limit: 10,
     });
@@ -182,7 +182,7 @@ const PostPage = () => {
     React.useEffect(() => {
         setParams({
             ...params,
-            searchKey: searchDebounce,
+            search: searchDebounce,
             status: status,
             fromDate: fromDate,
             toDate: toDate,
