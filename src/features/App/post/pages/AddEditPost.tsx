@@ -286,18 +286,10 @@ const AddEditPost = () => {
                                         Nội dung bài viết<span style={{ color: 'red' }}> *</span>
                                     </p>
                                     <MyEditor
-                                        defaultValue={location?.state?.id ? description : ''}
-                                        logData={(value: string) => {
-                                            setDescription(value.trim());
+                                        refContent={location?.state?.id ? description : ''}
+                                        handleCallbackContent={(value) => {
+                                            setDescription(value);
                                         }}
-                                        editorStyle={{
-                                            border: '1px solid #ACB0B0',
-                                            borderRadius: '5px',
-                                            overflow: 'hidden scroll',
-                                            padding: '0 16px',
-                                        }}
-                                        height={350}
-                                        setIsAllSpace={setIsAllSpace}
                                     />
                                 </Col>
                             </Row>

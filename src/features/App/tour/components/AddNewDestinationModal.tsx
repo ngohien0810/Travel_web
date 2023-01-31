@@ -286,18 +286,10 @@ const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
                 <MarginedRow>
                     <Col span={24}>
                         <MyEditor
-                            defaultValue={currentRecord ? description : ''}
-                            logData={(value) => {
+                            refContent={currentRecord ? description : ''}
+                            handleCallbackContent={(value) => {
                                 setDescription(value);
                             }}
-                            editorStyle={{
-                                border: '1px solid #ACB0B0',
-                                borderRadius: '5px',
-                                overflow: 'hidden scroll',
-                                padding: '0 16px',
-                            }}
-                            height={350}
-                            setIsAllSpace={setIsAllSpace}
                         />
                     </Col>
                 </MarginedRow>

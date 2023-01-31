@@ -192,20 +192,10 @@ const AddEditTour = () => {
                                         Nội dung bài viết<span style={{ color: 'red' }}> *</span>
                                     </p>
                                     <MyEditor
-                                        defaultValue={
-                                            location?.state?.record ? location?.state?.record?.Description : ''
-                                        }
-                                        logData={(value) => {
+                                        refContent={location?.state?.record ? location?.state?.record?.Description : ''}
+                                        handleCallbackContent={(value) => {
                                             setDescription(value);
                                         }}
-                                        editorStyle={{
-                                            border: '1px solid #ACB0B0',
-                                            borderRadius: '5px',
-                                            overflow: 'hidden scroll',
-                                            padding: '0 16px',
-                                        }}
-                                        height={350}
-                                        setIsAllSpace={setIsAllSpace}
                                     />
                                 </Col>
                             </Row>

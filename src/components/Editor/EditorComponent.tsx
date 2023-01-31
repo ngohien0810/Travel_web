@@ -1,100 +1,124 @@
+import React from 'react';
+import { Editor } from '@tinymce/tinymce-react';
+
 import AxiosClient from '@/apis/AxiosClient';
-import { ContentState, convertToRaw, EditorState } from 'draft-js';
-import draftToHtml from 'draftjs-to-html';
-import htmlToDraft from 'html-to-draftjs';
-import React, { Component, CSSProperties } from 'react';
-import { Editor } from 'react-draft-wysiwyg';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import useDebounce from '@/hooks/useDebounce';
 
-interface IProps {
-    logData: (data: string) => any;
-    defaultValue?: string;
-    height?: number | string;
-    width?: number | string;
-    editorStyle?: CSSProperties;
-    setIsAllSpace: React.Dispatch<React.SetStateAction<boolean>>;
-}
+const checkImage = (file: File) => {
+    const types = ['image/png', 'image/jpeg', 'image/jpg'];
+    let err = '';
+    if (!file) return (err = 'Tập tin không tồn tại.');
 
-const EditorComponent = (props: IProps) => {
-    const [editorState, setEditorState] = React.useState<any>('');
-    const firstEdit = React.useRef<any>(null);
+    if (types.includes(file.type)) {
+        if (file?.size > 2 * 1024 * 1024) {
+            err = 'Kích cỡ hình ảnh trong nội dung vượt quá 2 MB.';
+        }
+    } else if (file?.type === 'video/mp4') {
+        if (file?.size > 5 * 1024 * 1024) {
+            err = 'Dung lượng video trong nội dung nhỏ hơn 5 MB';
+        }
+    }
 
-    const uploadImageCallBack = async (file: any) => {
-        const fmData = new FormData();
-        const config = {
-            headers: {
-                'content-type': 'multipart/form-data',
-            },
-        };
-        fmData.append('images', file);
+    // file type video
 
-        const res: any = await AxiosClient.post('/UploadFile/UploadFile', fmData, config);
+    return err;
+};
 
-        return new Promise((resolve, reject) => {
-            resolve({ data: { link: res?.data?.[0] } });
-        });
-    };
+const NewsEditor = ({
+    disabled,
+    handleCallbackContent,
+    refContent,
+}: {
+    disabled?: boolean;
+    refContent?: any;
+    handleCallbackContent: (value: string) => void;
+}) => {
+    const [content, setContent] = React.useState('');
+    const debounceContent = useDebounce(content, 300);
 
     React.useEffect(() => {
-        if (firstEdit.current) return;
+        handleCallbackContent(debounceContent);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [debounceContent]);
 
-        if (props.defaultValue) {
-            const html = props.defaultValue;
-
-            const contentBlock = htmlToDraft(html);
-            if (contentBlock) {
-                const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
-                const editorState = EditorState.createWithContent(contentState);
-                setEditorState(editorState);
-            }
-
-            if (firstEdit) {
-                firstEdit.current = true;
-            }
-        }
-    }, [props.defaultValue]);
-
-    const onEditorStateChange = (editorState: any) => {
-        props.logData(draftToHtml(convertToRaw(editorState.getCurrentContent())));
-        setEditorState(editorState);
-    };
+    React.useEffect(() => {
+        setContent(refContent);
+    }, [refContent]);
 
     return (
-        <div style={{ width: '100%', marginBottom: 20 }}>
+        <>
+            <input id="my-file-upload" accept="image/*" type="file" name="my-file-upload" style={{ display: 'none' }} />
             <Editor
-                placeholder="Thêm nội dung bài viết"
-                editorState={editorState}
-                onEditorStateChange={(value) => onEditorStateChange(value)}
-                toolbar={{
-                    options: [
-                        'inline',
-                        'blockType',
-                        'fontSize',
-                        'fontFamily',
-                        'image',
-                        'list',
-                        'textAlign',
-                        'colorPicker',
+                disabled={disabled}
+                value={content}
+                onEditorChange={(ct: any) => {
+                    setContent(ct);
+                }}
+                apiKey="hjuz02bsvcykwi6ruki9xpuarsd6l8txzaouzknog6xef2w5"
+                init={{
+                    placeholder: 'Nhập nôi dung tin tức ...',
+                    height: 680,
+                    content_style: 'body { font-family:Quicksand,sans-serif; font-size:14px }',
+                    plugins: [
+                        'advlist',
+                        'autolink',
+                        'lists',
                         'link',
-                        'embedded',
-                        'emoji',
-                        'remove',
-                        'history',
+                        'image',
+                        'preview',
+                        'searchreplace',
+                        'fullscreen',
+                        'insertdatetime',
+                        'media',
+                        'table',
+                        'help',
+                        'wordcount',
                     ],
-                    image: {
-                        uploadCallback: uploadImageCallBack,
-                        previewImage: true,
-                        inputAccept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg',
+                    toolbar:
+                        'undo redo | blocks | ' +
+                        'image media ' +
+                        'bold italic forecolor | alignleft aligncenter ' +
+                        'alignright alignjustify | bullist numlist outdent indent | ' +
+                        'removeformat | help',
+
+                    default_link_target: '_blank',
+                    entity_encoding: 'raw',
+                    menubar: true,
+                    statubar: true,
+                    branding: false,
+                    file_picker_callback: async function (callback: any, value: any, meta: any) {
+                        if (meta?.filetype === 'image') {
+                            let input: any = document.getElementById('my-file-upload');
+                            input.click();
+                            input.onchange = async () => {
+                                var file = input.files[0];
+                                const check = checkImage(file);
+                                if (check !== '' && check) {
+                                    return;
+                                }
+
+                                const fmData = new FormData();
+                                const config = {
+                                    headers: {
+                                        Accept: 'multipart/form-data',
+                                        'Content-Type': 'multipart/form-data',
+                                    },
+                                };
+                                // fmData.append('file', file);
+                                // AxiosClient.post('/files/upload/single/image', fmData, config).then((res) => {
+                                //     if (res?.data?.url) {
+                                //         callback(res?.data?.url, {
+                                //             alt: file.name,
+                                //         });
+                                //     }
+                                // });
+                            };
+                        }
                     },
                 }}
-                editorStyle={{
-                    ...props.editorStyle,
-                    height: props.height ? props.height : 200,
-                    width: props.width ? props.width : '100%',
-                }}
             />
-        </div>
+        </>
     );
 };
 
-export default EditorComponent;
+export default NewsEditor;
