@@ -24,6 +24,8 @@ const PostPage = () => {
         limit: 10,
     });
 
+    const [callback, setCallback] = React.useState(false);
+
     const columns: any = [
         {
             width: '60px',
@@ -58,7 +60,25 @@ const PostPage = () => {
             title: <b>Trạng thái</b>,
             dataIndex: 'status',
             render: (value: number, record: any) => {
-                return <Switch checked={value === 1} onChange={() => changeNewsStatus(record.id)} />;
+                console.log('🚀 ~ file: index.tsx:82 ~ PostPage ~ value', value);
+
+                return (
+                    <Switch
+                        checked={!!value}
+                        onChange={() =>
+                            newsService
+                                .updateNews(
+                                    {
+                                        Status: value === 1 ? 0 : 1,
+                                    },
+                                    record.id
+                                )
+                                .then(() => {
+                                    setCallback(!callback);
+                                })
+                        }
+                    />
+                );
             },
         },
         {
@@ -162,23 +182,6 @@ const PostPage = () => {
         }
     };
 
-    const changeNewsStatus = async (id: number) => {
-        try {
-            setisLoading(true);
-            const res = await newsService.changeNewsStatus(id);
-            if (res.status) {
-                openNotificationWithIcon('success', 'Thành công', 'Chỉnh sửa trạng thái bài viết thành công!');
-                getListNews();
-            } else {
-                openNotificationWithIcon('error', 'Thất bại', 'Đã có lỗi xảy ra!');
-            }
-        } catch (error) {
-            console.log('ERROR: ', error);
-        } finally {
-            setisLoading(false);
-        }
-    };
-
     React.useEffect(() => {
         setParams({
             ...params,
@@ -196,7 +199,7 @@ const PostPage = () => {
 
     React.useEffect(() => {
         getListNews();
-    }, [params]);
+    }, [params, callback]);
 
     return (
         <Container

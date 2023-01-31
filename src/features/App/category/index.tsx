@@ -70,7 +70,21 @@ const CategoryPage = () => {
             width: '200px',
             align: 'center',
             render: (value: number, record: any) => {
-                return <Switch checked={value === 1} onChange={() => record.id} />;
+                return (
+                    <Switch
+                        checked={value === 1}
+                        onChange={() => {
+                            categoryService
+                                .updateCategory(record.id, { Status: value === 1 ? 0 : 1 })
+                                .then((res: any) => {
+                                    Notification('success', 'Cập nhật thành công');
+                                    setCallback(!callback);
+                                    setVisible(false);
+                                    setId('');
+                                });
+                        }}
+                    />
+                );
             },
         },
         {
