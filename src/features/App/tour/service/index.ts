@@ -17,16 +17,16 @@ export const tourService = {
         return AxiosClient.post(`/Tour/ChangeStatus/${id}`);
     },
     getDestinations: (payload: any) => {
-        return AxiosClient.get('/tours/destination', { params: payload });
+        return AxiosClient.get('/destination', { params: payload });
     },
     deleteDestination: (id: number) => {
-        return AxiosClient.delete(`/tours/destination/${id}`);
+        return AxiosClient.delete(`/destination/${id}`);
     },
     addDestination: (payload: any) => {
-        return AxiosClient.post(`/tours/destination`, payload);
+        return AxiosClient.post(`/destination`, payload);
     },
     updateDestination: (payload: any, id: any) => {
-        return AxiosClient.put(`/tours/destination/${id}`, payload);
+        return AxiosClient.put(`/destination/${id}`, payload);
     },
     changeDesStatus: (id: number) => {
         // return AxiosClient.post(`/Destination/ChangeStatus`, {params: {ID: id}})
