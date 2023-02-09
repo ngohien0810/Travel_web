@@ -8,7 +8,7 @@ import UploadCloundComponent from '@/components/Upload';
 import UploadComponent from '@/components/UploadComponent';
 import { routerPage } from '@/config/routes';
 import Container from '@/container/Container';
-import { Col, DatePicker, Input, PageHeader, Row, Form } from 'antd';
+import { Col, DatePicker, Input, PageHeader, Row, Form, Checkbox } from 'antd';
 import moment from 'moment';
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -36,6 +36,7 @@ const AddEditTour = () => {
             Description: description,
             TourPrice: values?.TourPrice,
             DateStartTour: moment(values?.DateStartTour).format('YYYY-MM-DD HH:mm'),
+            IsHome: values?.IsHome ? 1 : 0,
         };
         try {
             setisLoading(true);
@@ -84,6 +85,7 @@ const AddEditTour = () => {
                         url: location?.state?.record?.ImageUrl,
                     },
                 ],
+                IsHome: !!location?.state?.record?.IsHome,
             });
         }
     }, [location?.state?.id]);
@@ -187,6 +189,15 @@ const AddEditTour = () => {
                                         />
                                     }
                                 />
+
+                                <FormItemComponent
+                                    grid
+                                    name="IsHome"
+                                    label=" "
+                                    valuePropName="checked"
+                                    inputField={<Checkbox>Hiện thị ở trang chủ</Checkbox>}
+                                />
+
                                 <Col style={{ marginTop: 20 }} span={24}>
                                     <p>
                                         Nội dung bài viết<span style={{ color: 'red' }}> *</span>

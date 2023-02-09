@@ -31,9 +31,9 @@ const AddEditPost = () => {
     const [isNewsChosen, setIsNewsChosen] = React.useState<boolean>(false);
     const [isHomeChosen, setIsHomeChosen] = React.useState<boolean>(false);
     const [isHomeDisplayed, setIsHomeDisplayed] = React.useState<number>(0);
+    const [isHome, setIsHome] = React.useState<any>(false);
 
     const [fileUpload, setFileUpload] = React.useState<any>(null);
-    console.log('🚀 ~ file: AddEditPost.tsx:36 ~ AddEditPost ~ fileUpload', fileUpload);
     const fileEdit = React.useRef<any>(null);
 
     const validateValue = () => {
@@ -93,6 +93,7 @@ const AddEditPost = () => {
                 setIsHomeDisplayed(res?.data?.IsHome);
                 setDescription(res?.data?.Description);
                 setFileUpload(res?.data?.ImageUrl);
+                setIsHome(res?.data?.IsHome);
                 fileEdit.current = [
                     {
                         uid: res?.data?.ImageUrl,
@@ -110,12 +111,12 @@ const AddEditPost = () => {
     };
 
     const addEditNews = async () => {
-        const payload = {
+        const payload: any = {
             ImageUrl: fileUpload,
             Title: title,
-            IsHome: isHomeDisplayed ? 1 : 0,
             Description: description,
             CategoryID: categoryIds,
+            IsHome: isHome ? 1 : 0,
         };
         try {
             setisLoading(true);
@@ -270,11 +271,11 @@ const AddEditPost = () => {
                                             Chọn làm tin tức nổi bật
                                         </Checkbox>
                                     )}
-                                    {isHomeChosen && (
+                                    {location?.state?.id && (
                                         <Checkbox
-                                            checked={isHomeDisplayed === 1 ? true : false}
-                                            onChange={(e: CheckboxChangeEvent) => {
-                                                setIsHomeDisplayed(e.target.checked ? 1 : 0);
+                                            checked={isHome === 1 ? true : false}
+                                            onChange={(e: any) => {
+                                                setIsHome(e.target.checked ? 1 : 0);
                                             }}
                                         >
                                             Hiển thị ở trang chủ

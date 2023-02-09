@@ -48,12 +48,12 @@ const PostPage = () => {
                 return <Tag color="blue">{value?.Name}</Tag>;
             },
         },
-        {
-            width: '160px',
-            align: 'center',
-            title: <b>Lượt yêu thích</b>,
-            dataIndex: 'loveNumber',
-        },
+        // {
+        //     width: '160px',
+        //     align: 'center',
+        //     title: <b>Lượt yêu thích</b>,
+        //     dataIndex: 'loveNumber',
+        // },
         {
             width: '160px',
             align: 'center',
@@ -115,6 +115,7 @@ const PostPage = () => {
         },
     ];
     const [listNews, setListNews] = React.useState<INews[]>([]);
+    console.log('🚀 ~ file: index.tsx:118 ~ PostPage ~ listNews', listNews);
 
     const [categories, setCategories] = React.useState<ICategory[]>([]);
     const [categoryId, setCategoryId] = React.useState<number>();
@@ -139,6 +140,7 @@ const PostPage = () => {
                     date: moment(item.CreatedDate).format('DD/MM/YYYY'),
                     category: item?.category,
                     loveNumber: item.NewFavourite,
+                    ...item,
                 }));
                 setTotal(res.totalItems);
                 setListNews(data);

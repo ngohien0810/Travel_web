@@ -11,6 +11,7 @@ import FormComponent from '@/components/FormComponent';
 import FormItemComponent from '@/components/FormComponent/FormItemComponent';
 import { Notification } from '@/utils';
 import IconAntd from '@/components/IconAntd';
+import UploadCloundComponent from '@/components/Upload';
 
 const CategoryPage = () => {
     const [categories, setCategories] = React.useState([]);
@@ -25,6 +26,7 @@ const CategoryPage = () => {
     const [id, setId] = React.useState('');
 
     const [form] = Form.useForm();
+    const fileEdit = React.useRef<any>(null);
 
     React.useEffect(() => {
         categoryService.getListCategory({ title: search, page }).then((res: any) => {
@@ -107,9 +109,16 @@ const CategoryPage = () => {
                             icon={<IconAntd icon="EditOutlined" />}
                             onClick={() => {
                                 setId(row?.id);
+                                console.log('🚀 ~ file: index.tsx:112 ~ CategoryPage ~ row', row);
                                 form.setFieldsValue({
                                     Name: row?.Name,
                                 });
+                                fileEdit.current = [
+                                    {
+                                        uid: row?.ImageUrl,
+                                        url: row?.ImageUrl,
+                                    },
+                                ];
                                 setVisible(true);
                             }}
                         />
@@ -186,11 +195,34 @@ const CategoryPage = () => {
                         label="Tên danh mục"
                     />
 
+                    <FormItemComponent
+                        name="ImageUrl"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Tên tour không được để trống',
+                            },
+                        ]}
+                        label="Hình ảnh"
+                        inputField={
+                            <UploadCloundComponent
+                                isUploadServerWhenUploading
+                                initialFile={fileEdit.current}
+                                uploadType="list"
+                                listType="picture-card"
+                                maxLength={1}
+                                onSuccessUpload={(url: any) => {
+                                    url && form.setFieldsValue({ ImageUrl: url?.url });
+                                }}
+                            />
+                        }
+                    />
                     <Row justify="end" className="gx-m-0">
                         <Button
                             onClick={() => {
                                 setId('');
                                 setVisible(false);
+                                fileEdit.current = null;
                             }}
                         >
                             Đóng
