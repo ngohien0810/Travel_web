@@ -37,6 +37,7 @@ const AddEditTour = () => {
             TourPrice: values?.TourPrice,
             DateStartTour: moment(values?.DateStartTour).format('YYYY-MM-DD HH:mm'),
             IsHome: values?.IsHome ? 1 : 0,
+            RangeTour: values?.RangeTour,
         };
         try {
             setisLoading(true);
@@ -86,6 +87,7 @@ const AddEditTour = () => {
                     },
                 ],
                 IsHome: !!location?.state?.record?.IsHome,
+                RangeTour: location?.state?.record?.RangeTour,
             });
         }
     }, [location?.state?.id]);
@@ -141,12 +143,25 @@ const AddEditTour = () => {
                                     label="Giá tour"
                                     inputField={<Input placeholder="Nhập giá tour người lớn" />}
                                 />
+                                <FormItemComponent
+                                    grid
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập thời gian tour',
+                                        },
+                                    ]}
+                                    name="RangeTour"
+                                    label="Thời gian tour"
+                                    inputField={<Input placeholder="Nhập thời gian tour" />}
+                                />
                                 {/* <FormItemComponent
                                     grid
                                     name="title"
                                     label="Giá tour (Trẻ em)"
                                     inputField={<Input placeholder="Nhập giá tour trẻ em" />}
                                 /> */}
+
                                 <FormItemComponent
                                     grid
                                     rules={[
@@ -164,6 +179,14 @@ const AddEditTour = () => {
                                             placeholder="Chọn thời gian khởi hành"
                                         />
                                     }
+                                />
+
+                                <FormItemComponent
+                                    grid
+                                    name="IsHome"
+                                    label=" "
+                                    valuePropName="checked"
+                                    inputField={<Checkbox>Hiện thị ở trang chủ</Checkbox>}
                                 />
 
                                 <FormItemComponent
@@ -189,15 +212,6 @@ const AddEditTour = () => {
                                         />
                                     }
                                 />
-
-                                <FormItemComponent
-                                    grid
-                                    name="IsHome"
-                                    label=" "
-                                    valuePropName="checked"
-                                    inputField={<Checkbox>Hiện thị ở trang chủ</Checkbox>}
-                                />
-
                                 <Col style={{ marginTop: 20 }} span={24}>
                                     <p>
                                         Nội dung bài viết<span style={{ color: 'red' }}> *</span>
