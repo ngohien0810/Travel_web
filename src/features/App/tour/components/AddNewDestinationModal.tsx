@@ -1,14 +1,14 @@
-import UploadComponent from '@/components/UploadComponent';
-import { Button, Col, Input, InputNumber, Modal, Row, Space } from 'antd';
+import AxiosClient from '@/apis/AxiosClient';
 import MyEditor from '@/components/Editor/EditorComponent';
+import CustomLoading from '@/components/Loading';
+import { openNotificationWithIcon } from '@/components/Notification';
+import UploadCloundComponent from '@/components/Upload';
+import useDebounce from '@/hooks/useDebounce';
+import { AutoComplete, Button, Col, Input, InputNumber, Modal, Row, Space } from 'antd';
+import GoogleMapReact from 'google-map-react';
 import React from 'react';
 import styled from 'styled-components';
-import CustomLoading from '@/components/Loading';
 import { tourService } from '../service';
-import { openNotificationWithIcon } from '@/components/Notification';
-import { IDestinationDetail } from './Interface';
-import GoogleMapReact from 'google-map-react';
-import UploadCloundComponent from '@/components/Upload';
 
 interface IAddNewDestinationModal {
     isModalOpen: boolean;
@@ -50,6 +50,8 @@ const Wrapper = styled.div`
 `;
 
 const Marker = ({ text, onClick }: any) => <Wrapper alt={text} onClick={onClick} />;
+const getPlaceAuto = (payload: any) =>
+    AxiosClient.get('https://api.pyoyo.vn/api/v1/google-address/place-auto', { params: payload });
 
 const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
     const {
@@ -75,12 +77,33 @@ const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
     const [fileUpload, setFileUpload] = React.useState<any>(null);
     const fileEdit = React.useRef<any>(null);
 
-    const defaultProps = {
-        center: {
-            lat: 21.028511,
-            lng: 105.804817,
-        },
-        zoom: 15,
+    // option google map
+    const [options, setOptions] = React.useState<Array<any>>([]);
+
+    const [placeId, setPlaceId] = React.useState('');
+    const [searchLocation, setSearchLocation] = React.useState('');
+    const debounceSearchLocation = useDebounce(searchLocation, 500);
+
+    const [center, setCenter] = React.useState({
+        lat: 21.028511,
+        lng: 105.804817,
+    });
+
+    React.useEffect(() => {
+        onChange(debounceSearchLocation);
+    }, [debounceSearchLocation]);
+
+    const onChange = async (data: string) => {
+        try {
+            const res: any = await getPlaceAuto({ address: data });
+            const list_option = res?.data?.predictions?.map((item: any) => ({
+                value: item.description,
+                place_id: item.place_id,
+            }));
+            setOptions(list_option);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     const [places, setPlaces] = React.useState({
@@ -142,7 +165,34 @@ const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
             lat: currentRecord?.Latitude,
             lng: currentRecord?.Longtitude,
         });
+        setCenter({
+            lat: currentRecord?.Latitude,
+            lng: currentRecord?.Longtitude,
+        });
     }, [currentRecord]);
+
+    // place to lonlat
+    React.useEffect(() => {
+        if (placeId) {
+            fetch(
+                `https://maps.googleapis.com/maps/api/geocode/json?place_id=${placeId}&key=AIzaSyBnQuI2W5DyQVHJZpOXqiyODTG_d7dkPfk`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    const location = data.results[0].geometry.location;
+                    const latitude = location.lat;
+                    const longitude = location.lng;
+                    setCenter({
+                        lat: latitude,
+                        lng: longitude,
+                    });
+                    setPlaces({
+                        lat: latitude,
+                        lng: longitude,
+                    });
+                });
+        }
+    }, [placeId]);
 
     return (
         <CustomLoading isLoading={isLoading}>
@@ -157,7 +207,26 @@ const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
                 bodyStyle={{ paddingTop: '0' }}
                 closable={false}
             >
-                <Row justify="end">
+                <Row className="gx-mb-2" justify="space-between" align="middle">
+                    <AutoComplete
+                        // className={styles.auto_complete}
+                        // filterOption={(inputValue, option) =>
+                        //   option!.value
+                        //     .toUpperCase()
+                        //     .indexOf(inputValue.toUpperCase()) !== -1
+                        // }
+                        // value={}
+                        style={{ width: '400px' }}
+                        options={options}
+                        placeholder="Chọn địa chỉ google maps"
+                        onSelect={(select: any, option: any) => {
+                            setPlaceId(option?.place_id);
+                            console.log('select: ', option);
+                        }}
+                        onChange={(value: string) => {
+                            setSearchLocation(value);
+                        }}
+                    />
                     <Space style={{ padding: '10px 20px' }}>
                         <Button
                             onClick={() => {
@@ -177,8 +246,8 @@ const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
                         <div style={{ height: '400px' }}>
                             <GoogleMapReact
                                 bootstrapURLKeys={{ key: 'AIzaSyBnQuI2W5DyQVHJZpOXqiyODTG_d7dkPfk' }}
-                                defaultCenter={defaultProps.center}
-                                defaultZoom={defaultProps.zoom}
+                                center={center}
+                                defaultZoom={15}
                                 yesIWantToUseGoogleMapApiInternals
                                 onClick={(e) => {
                                     setPlaces({
