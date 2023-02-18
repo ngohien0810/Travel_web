@@ -4,6 +4,7 @@ import CustomLoading from '@/components/Loading';
 import { openNotificationWithIcon } from '@/components/Notification';
 import UploadCloundComponent from '@/components/Upload';
 import useDebounce from '@/hooks/useDebounce';
+import { Notification } from '@/utils';
 import { AutoComplete, Button, Col, Input, InputNumber, Modal, Row, Space } from 'antd';
 import GoogleMapReact from 'google-map-react';
 import React from 'react';
@@ -122,6 +123,23 @@ const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
             Longtitude: places.lng,
             Latitude: places.lat,
         };
+        if (!payload.Name) {
+            Notification('error', 'Tên điểm đến không được để trống!');
+            return;
+        }
+        if (!payload.OrderIndex) {
+            Notification('error', 'Thứ tự không được để trống!');
+            return;
+        }
+        if (!payload.Description) {
+            Notification('error', 'Mô tả không được để trống!');
+            return;
+        }
+        if (!fileUpload) {
+            Notification('error', 'Hình ảnh không được để trống!');
+            return;
+        }
+
         try {
             setIsLoading(true);
             if (!currentRecord) {
@@ -332,6 +350,7 @@ const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
                                 uploadType="list"
                                 listType="picture-card"
                                 maxLength={1}
+                                onRemove={() => setFileUpload(null)}
                                 onSuccessUpload={(url: any) => {
                                     url && setFileUpload(url?.url);
                                 }}
