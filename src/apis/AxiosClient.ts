@@ -36,21 +36,7 @@ AxiosClient.interceptors.request.use(async (config: AxiosRequestConfig) => {
 // handle response to convert all api responses to camelCase
 AxiosClient.interceptors.response.use(
     (response: AxiosResponse) => {
-        if (response && response.data) {
-            // if (!response.data.status || response.data.code === 400 || response.data.code === 403) {
-            //     switch (response.data.code) {
-            //         case 400:
-            //             // handle error
-            //             break;
-            //         case 403:
-            //             // handle error
-            //             break;
-            //         default:
-            //             Notification('error', response?.data?.message);
-            //             break;
-            //     }
-            // }
-            // cover response to camelCase
+        if (response) {
             return response.data;
         }
 
@@ -58,7 +44,7 @@ AxiosClient.interceptors.response.use(
     },
     (error) => {
         // Handle errors
-        // error?.response?.data?.message && Notification('error', error?.response?.data?.message);
+        error?.response?.data?.message && Notification('error', error?.response?.data?.message);
         return error;
     }
 );

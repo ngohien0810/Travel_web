@@ -17,8 +17,8 @@ interface IAddEditModal {
     setCurrentId: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
-const AddEditModal = (props: IAddEditModal) => {
-    const { isOpenModal, setIsOpenModal, getListAccounts, currentId, setCurrentId } = props;
+const AddEditModal = (props: any) => {
+    const { isOpenModal, setIsOpenModal, getListAccounts, currentId, setCurrentId, recordUpdate } = props;
 
     const [form] = Form.useForm();
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -30,15 +30,14 @@ const AddEditModal = (props: IAddEditModal) => {
             if (!currentId) {
                 // Thêm mới
                 const payload = {
-                    name,
-                    phone,
-                    adrees: address,
-                    password,
-                    email,
-                    role: 0,
+                    Username: name,
+                    Phone: phone,
+                    Address: address,
+                    Password: password,
+                    Email: email,
                 };
-                const res = await accountService.addAccount(payload);
-                if (res.status) {
+                const res: any = await accountService.addAccount(payload);
+                if (res) {
                     openNotificationWithIcon('success', 'Thành công', 'Thêm tài khoản mới thành công!');
                     setIsOpenModal(false);
                     setCurrentId(undefined);
@@ -50,15 +49,13 @@ const AddEditModal = (props: IAddEditModal) => {
             } else {
                 // Cập nhật
                 const payload = {
-                    id: currentId,
-                    name,
-                    phone,
-                    adrees: address,
-                    email,
-                    role: 0,
+                    Username: name,
+                    Phone: phone,
+                    Address: address,
+                    Email: email,
                 };
-                const res = await accountService.updateAccount(payload);
-                if (res.status) {
+                const res = await accountService.updateAccount(currentId, payload);
+                if (res) {
                     openNotificationWithIcon('success', 'Thành công', 'Cập nhật tài khoản mới thành công!');
                     setIsOpenModal(false);
                     setCurrentId(undefined);
@@ -74,31 +71,17 @@ const AddEditModal = (props: IAddEditModal) => {
         }
     };
 
-    const getAccountDetail = async () => {
-        try {
-            setIsLoading(true);
-            const res = await accountService.getAccountDetail(currentId);
-            if (res.status) {
-                form.setFieldsValue({
-                    name: res?.data?.username,
-                    email: res?.data?.email,
-                    address: res?.data?.address,
-                    phone: res?.data?.phone,
-                });
-            } else {
-                openNotificationWithIcon('error', 'Thất bại', 'Lấy thông tin người dùng thất bại!');
-            }
-        } catch (error) {
-            console.log('ERROR: ', error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     React.useEffect(() => {
-        console.log('THIS CASE');
-        if (currentId) getAccountDetail();
-    }, [currentId]);
+        console.log(recordUpdate);
+        if (currentId) {
+            form.setFieldsValue({
+                name: recordUpdate?.name,
+                email: recordUpdate?.email,
+                address: recordUpdate?.address,
+                phone: recordUpdate?.phone,
+            });
+        }
+    }, [currentId, recordUpdate]);
 
     return (
         <CustomLoading isLoading={isLoading}>
@@ -125,16 +108,6 @@ const AddEditModal = (props: IAddEditModal) => {
                         rules={[
                             { required: true, message: 'Vui lòng nhập họ tên!' },
                             { max: 65, message: 'Vui lòng nhập không quá 65 ký tự!' },
-                            {
-                                message: 'Tên không đúng định dạng!',
-                                validator: (_, value) => {
-                                    // const value = value.trim();
-                                    if (!NAME_REGEX.test(value) || !value) {
-                                        return Promise.resolve();
-                                    }
-                                    return Promise.reject();
-                                },
-                            },
                         ]}
                     >
                         <Input allowClear placeholder="Họ tên" />

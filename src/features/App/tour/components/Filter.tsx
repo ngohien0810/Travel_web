@@ -22,7 +22,7 @@ const Filter = (props: IFilter) => {
                 <Input.Search
                     allowClear
                     style={{ width: '100%' }}
-                    placeholder="Tên chuyến du lịch"
+                    placeholder="Mã, Tên, Giá chuyến du lịch"
                     addonAfter={<Icon type="close-circle-o" />}
                     value={search}
                     onChange={(e: any) => {
@@ -45,17 +45,22 @@ const Filter = (props: IFilter) => {
                     <Select.Option value={0}>Ngừng hoạt động</Select.Option>
                 </Select>
             </Col>
-            {/* <Col span={8}>
+            <Col span={8}>
                 <DatePicker.RangePicker
                     style={{ width: '100%' }}
                     format={'DD/MM/YYYY'}
                     placeholder={['Ngày bắt đầu', 'Ngày kết thúc']}
-                    onCalendarChange={(_, dateStrings: any) => {
-                        setFromDate(dateStrings[0]);
-                        setToDate(dateStrings[1]);
+                    onCalendarChange={(dates: any, dateStrings: any) => {
+                        if (!dates) {
+                            setFromDate(undefined);
+                            setToDate(undefined);
+                            return;
+                        }
+                        setFromDate(dates[0]?.format('YYYY-MM-DD'));
+                        setToDate(dates[1]?.format('YYYY-MM-DD'));
                     }}
                 />
-            </Col> */}
+            </Col>
         </Row>
     );
 };

@@ -1,7 +1,6 @@
-
 export interface ITourDetail {
     record: any;
-    changeTourStatus: (id: number) => Promise<void>;
+    changeTourStatus: any;
     deleteDestination: (id: number) => Promise<void>;
     getTours: () => Promise<void>;
     currentTourId: number | undefined;
@@ -15,11 +14,11 @@ export interface IParam {
 }
 
 export interface IDestinationDetail {
-    id: number
-    desName: string
-    index: number
-    description: string
-    mapUrl: string
-    imgUrl: string
-    videoUrl: string
+    id: number;
+    desName: string;
+    index: number;
+    description: string;
+    mapUrl: string;
+    imgUrl: string;
+    videoUrl: string;
 }

@@ -109,9 +109,9 @@ const CategoryPage = () => {
                             icon={<IconAntd icon="EditOutlined" />}
                             onClick={() => {
                                 setId(row?.id);
-                                console.log('🚀 ~ file: index.tsx:112 ~ CategoryPage ~ row', row);
                                 form.setFieldsValue({
                                     Name: row?.Name,
+                                    ImageUrl: row?.ImageUrl,
                                 });
                                 fileEdit.current = [
                                     {
@@ -200,7 +200,7 @@ const CategoryPage = () => {
                         rules={[
                             {
                                 required: true,
-                                message: 'Tên tour không được để trống',
+                                message: 'Hình ảnh danh mục không được để trống',
                             },
                         ]}
                         label="Hình ảnh"

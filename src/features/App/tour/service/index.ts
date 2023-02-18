@@ -10,6 +10,9 @@ export const tourService = {
     updateTour: (payload: any, id: any) => {
         return AxiosClient.put(`/tours/${id}`, payload);
     },
+    updateStatusTour: (payload: any, id: any) => {
+        return AxiosClient.patch(`/tours/${id}`, payload);
+    },
     deleteTour: (id: number) => {
         return AxiosClient.delete(`/tours/${id}`);
     },

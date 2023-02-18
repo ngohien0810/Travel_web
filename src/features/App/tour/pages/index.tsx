@@ -75,6 +75,7 @@ const TourPage = () => {
         {
             title: <b>Ngày khởi hành</b>,
             dataIndex: 'DateStartTour',
+            render: (value: any) => moment(value).format('DD/MM/YYYY'),
         },
         {
             title: <b>Lượt đánh giá</b>,
@@ -132,11 +133,11 @@ const TourPage = () => {
         }
     };
 
-    const changeTourStatus = async (id: number) => {
+    const changeTourStatus = async (id: number, record?: any) => {
         try {
             setIsLoading(true);
-            const res = await tourService.changeTourStatus(id);
-            if (res.status) {
+            const res = await tourService.updateStatusTour({ Status: record?.Status ? 0 : 1 }, id);
+            if (res) {
                 openNotificationWithIcon('success', 'Thành công', 'Thay đổi trạng thái tour thành công!');
                 getTours();
             } else {

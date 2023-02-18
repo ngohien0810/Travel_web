@@ -17,7 +17,6 @@ import { ITourDetail } from './Interface';
 const TourDetail = (props: ITourDetail) => {
     const navigate = useNavigate();
     const { record, changeTourStatus, getTours, currentTourId } = props;
-    console.log('🚀 ~ file: TourDetail.tsx:19 ~ TourDetail ~ record', record);
     const [search, setSearch] = React.useState<string>('');
     const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
     const [currentId, setCurrentId] = React.useState<number>();
@@ -209,7 +208,7 @@ const TourDetail = (props: ITourDetail) => {
                                       ? 'Bạn có chắc chắn muốn ngừng hoạt động tour này?'
                                       : 'Bạn có chắc chắn muốn mở lại hoạt động tour này?'
                               }
-                              onConfirm={() => changeTourStatus(record.id)}
+                              onConfirm={() => changeTourStatus(record.id, record)}
                               okText={record?.Status === 1 ? 'Ngừng' : 'Mở'}
                               cancelText={'Đóng'}
                           >

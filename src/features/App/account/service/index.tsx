@@ -8,16 +8,16 @@ export const accountService = {
         return AxiosClient.post(`/User/ChangeStatus/${id}`);
     },
     deleteAccount: (id: number) => {
-        return AxiosClient.post(`/User/DeleteUser/${id}`);
+        return AxiosClient.delete(`/accounts/${id}`);
     },
     addAccount: (payload: any) => {
-        return AxiosClient.post(`/User/CreateUser`, payload);
+        return AxiosClient.post(`/accounts`, payload);
     },
     getAccountDetail: (id: number | undefined) => {
         return AxiosClient.get(`/User/GetUserDetail/${id}`);
     },
-    updateAccount: (payload: any) => {
-        return AxiosClient.post(`/User/UpdateUser`, payload);
+    updateAccount: (currentId: any, payload: any) => {
+        return AxiosClient.put(`/accounts/${currentId}`, payload);
     },
     resetAccount: (id: number) => {
         return AxiosClient.post(`/User/ResetPassword?ID=${id}`, {});

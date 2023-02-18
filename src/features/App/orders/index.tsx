@@ -3,7 +3,7 @@ import React from 'react';
 import ButtonAdd from '@/components/Button/ButtonAdd';
 import TableComponent from '@/components/TableComponents';
 import Container from '@/container/Container';
-import { Input, PageHeader, Tag, Switch } from 'antd';
+import { Input, PageHeader, Tag, Switch, Row, Col, Select, DatePicker } from 'antd';
 import Icon from '@ant-design/icons';
 // import { categoryService } from './service';
 import moment from 'moment';
@@ -16,13 +16,15 @@ const OrdersPage = () => {
     const [total, setTotal] = React.useState(0);
     const [page, setPage] = React.useState(1);
     const [callback, setCallback] = React.useState(false);
-
+    const [status, setStatus] = React.useState<any>('');
+    const [fromDate, setFromDate] = React.useState<string>();
+    const [toDate, setToDate] = React.useState<string>();
     React.useEffect(() => {
-        orderService.getOrders({ search, page }).then((res: any) => {
+        orderService.getOrders({ search, page, status, fromDate, toDate }).then((res: any) => {
             setOrders(res.data);
             setTotal(res?.totalItems);
         });
-    }, [search, page, callback]);
+    }, [search, page, callback, status, fromDate, toDate]);
 
     const columns: any = [
         {
@@ -96,16 +98,51 @@ const OrdersPage = () => {
             <Container
                 header={<PageHeader style={{ borderRadius: 8 }} title="Danh sách đơn hàng" />}
                 filterComponent={
-                    <Input.Search
-                        allowClear
-                        style={{ width: '360px', margin: 0 }}
-                        placeholder="Mã đơn hàng, tên khách hàng, số điện thoại"
-                        addonAfter={<Icon type="close-circle-o" />}
-                        value={search}
-                        onChange={(e: any) => {
-                            setSearch(e.target.value);
-                        }}
-                    />
+                    <Row>
+                        <Col span={8}>
+                            <Input.Search
+                                allowClear
+                                style={{ margin: 0 }}
+                                placeholder="Mã đơn hàng, tên khách hàng"
+                                addonAfter={<Icon type="close-circle-o" />}
+                                value={search}
+                                onChange={(e: any) => {
+                                    setSearch(e.target.value);
+                                }}
+                            />
+                        </Col>
+                        <Col span={8}>
+                            <Select
+                                style={{ width: '100%' }}
+                                placeholder="Chọn trạng thái"
+                                allowClear
+                                onChange={(value: number | undefined) => {
+                                    if (value === undefined) {
+                                        setStatus(null);
+                                    } else setStatus(value);
+                                }}
+                            >
+                                <Select.Option value={1}>Hoạt động</Select.Option>
+                                <Select.Option value={0}>Ngừng hoạt động</Select.Option>
+                            </Select>
+                        </Col>
+                        <Col span={8}>
+                            <DatePicker.RangePicker
+                                style={{ width: '100%' }}
+                                format={'DD/MM/YYYY'}
+                                placeholder={['Từ ngày', 'Đến ngày']}
+                                onCalendarChange={(dates: any, dateStrings: any) => {
+                                    if (!dates) {
+                                        setFromDate(undefined);
+                                        setToDate(undefined);
+                                        return;
+                                    }
+                                    setFromDate(dates[0]?.format('YYYY-MM-DD'));
+                                    setToDate(dates[1]?.format('YYYY-MM-DD'));
+                                }}
+                            />
+                        </Col>
+                    </Row>
                 }
                 contentComponent={
                     <TableComponent

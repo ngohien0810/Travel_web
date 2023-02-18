@@ -35,16 +35,13 @@ const AccountPage = () => {
             dataIndex: 'phone',
         },
         {
+            title: <b>Địa chỉ</b>,
+            dataIndex: 'address',
+        },
+        {
             title: <b>Ngày tạo</b>,
             dataIndex: 'date',
             render: (value: string) => moment(value).format('DD/MM/YYYY'),
-        },
-        {
-            title: <b>Trạng thái</b>,
-            dataIndex: 'status',
-            render: (value: number, record: any) => {
-                return <Switch checked={value === 1} onChange={() => changeStatus(record.id)} />;
-            },
         },
 
         {
@@ -58,12 +55,13 @@ const AccountPage = () => {
                             onClick={() => {
                                 setIsOpenModal(true);
                                 setCurrentId(record.id);
+                                setRecordUpdate(record);
                             }}
                         >
                             <IconAntd icon="EditOutlined" fontSize={18} />
                         </a>
 
-                        <Popconfirm
+                        {/* <Popconfirm
                             title="Bạn có chắc chắn muốn reset mật khẩu tài khoản này?"
                             placement="top"
                             onConfirm={() => resetPassword(record.id)}
@@ -74,7 +72,7 @@ const AccountPage = () => {
                             <a style={{ color: 'orange' }}>
                                 <IconAntd icon="RedoOutlined" fontSize={18} marginLeft={15} />
                             </a>
-                        </Popconfirm>
+                        </Popconfirm> */}
                         <Popconfirm
                             title="Bạn có chắc chắn muốn xoá người dùng này?"
                             placement="top"
@@ -95,6 +93,7 @@ const AccountPage = () => {
 
     const navigate = useNavigate();
     const [currentId, setCurrentId] = React.useState<number>();
+    const [recordUpdate, setRecordUpdate] = React.useState<any>(null);
     const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);
     const [isOpenConfirmModal, setIsOpenConfirmModal] = React.useState<boolean>(false);
     const [listAccounts, setListAccounts] = React.useState<ICustomer[]>([]);
@@ -124,6 +123,7 @@ const AccountPage = () => {
                         id: item?.id,
                         name: item?.Username,
                         phone: item?.Phone,
+                        address: item?.Address,
                         email: item?.Email,
                         date: item?.CreatedDate,
                         status: item?.Status,
@@ -160,7 +160,7 @@ const AccountPage = () => {
         try {
             setIsLoading(true);
             const res = await accountService.deleteAccount(id);
-            if (res.status) {
+            if (res) {
                 openNotificationWithIcon('success', 'Thành công', 'Xoá thái tài khoản thành công!');
                 getListAccounts();
             } else {
@@ -266,6 +266,7 @@ const AccountPage = () => {
                         />
                         {isOpenModal && (
                             <AddEditModal
+                                recordUpdate={recordUpdate}
                                 getListAccounts={getListAccounts}
                                 isOpenModal={isOpenModal}
                                 setIsOpenModal={setIsOpenModal}

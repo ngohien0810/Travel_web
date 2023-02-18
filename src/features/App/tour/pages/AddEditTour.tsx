@@ -35,7 +35,7 @@ const AddEditTour = () => {
             Title: values.Title,
             Description: description,
             TourPrice: values?.TourPrice,
-            DateStartTour: moment(values?.DateStartTour).format('YYYY-MM-DD HH:mm'),
+            DateStartTour: moment(values?.DateStartTour).format('YYYY-MM-DD'),
             IsHome: values?.IsHome ? 1 : 0,
             RangeTour: values?.RangeTour,
         };
@@ -136,7 +136,7 @@ const AddEditTour = () => {
                                     rules={[
                                         {
                                             required: true,
-                                            message: 'Tên tour không được để trống',
+                                            message: 'Giá tour không được để trống',
                                         },
                                     ]}
                                     name="TourPrice"
@@ -167,7 +167,7 @@ const AddEditTour = () => {
                                     rules={[
                                         {
                                             required: true,
-                                            message: 'Tên tour không được để trống',
+                                            message: 'Vui lòng chọn thời gian khởi hành',
                                         },
                                     ]}
                                     name="DateStartTour"
@@ -195,7 +195,7 @@ const AddEditTour = () => {
                                     rules={[
                                         {
                                             required: true,
-                                            message: 'Tên tour không được để trống',
+                                            message: 'Vui lòng chọn ảnh tour',
                                         },
                                     ]}
                                     label="Hình ảnh"
