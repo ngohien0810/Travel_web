@@ -35,7 +35,7 @@ export const imageUpload = async (file: any) => {
     return { public_id: data.public_id, url: data.secure_url };
 };
 
-const UploadCloundComponent: React.FC<IProps> = ({
+const UploadCloundComponent: React.FC<any> = ({
     accept = 'image/*',
     listType = 'text',
     uploadType = 'single',
@@ -46,6 +46,7 @@ const UploadCloundComponent: React.FC<IProps> = ({
     maxLength = 5,
     initialFile,
     disabled,
+    onRemove,
 }) => {
     const [files, setFiles] = React.useState<UploadFile[]>([]);
     console.log('🚀 ~ file: index.tsx:51 ~ files', files);
@@ -146,7 +147,10 @@ const UploadCloundComponent: React.FC<IProps> = ({
                 listType={listType}
                 fileList={isShowFileList ? files : []}
                 onPreview={handlePreview}
-                onRemove={() => onSuccessUpload(null)}
+                onRemove={() => {
+                    onSuccessUpload(null);
+                    onRemove && onRemove();
+                }}
             >
                 {files.length >= maxLength ? null : uploadType === 'single' && files.length >= 1 ? null : listType ===
                   'text' ? (

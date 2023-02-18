@@ -174,7 +174,7 @@ const AddEditTour = () => {
                                     label="Thời gian khởi hành"
                                     inputField={
                                         <DatePicker
-                                            format="HH:mm DD/MM/YYYY"
+                                            format="DD/MM/YYYY"
                                             style={{ width: '100%' }}
                                             placeholder="Chọn thời gian khởi hành"
                                         />
@@ -206,6 +206,12 @@ const AddEditTour = () => {
                                             uploadType="list"
                                             listType="picture-card"
                                             maxLength={1}
+                                            onRemove={() => {
+                                                form.setFieldsValue({
+                                                    imageUrl: null,
+                                                });
+                                                console.log('remove tour');
+                                            }}
                                             onSuccessUpload={(url: any) => {
                                                 url && form.setFieldsValue({ imageUrl: url?.url });
                                             }}
