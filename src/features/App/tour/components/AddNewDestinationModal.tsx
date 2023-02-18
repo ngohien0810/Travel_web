@@ -161,6 +161,7 @@ const AddNewDestinationModal = (props: IAddNewDestinationModal) => {
         setIndex(currentRecord?.OrderIndex);
         setMapUrl(currentRecord?.MapUrl);
         setDescription(currentRecord?.Description);
+        setFileUpload(currentRecord?.ImageUrl);
         setPlaces({
             lat: currentRecord?.Latitude,
             lng: currentRecord?.Longtitude,
