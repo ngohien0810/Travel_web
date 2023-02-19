@@ -5,6 +5,8 @@ import styled from 'styled-components';
 import card1 from '../../../../assets/card1.png';
 import card2 from '../../../../assets/card2.png';
 import card3 from '../../../../assets/card3.png';
+import Chart1 from '../components/Chart1';
+import ChartColumn from '../components/ChartColumn';
 import { homeService } from '../service';
 const HomePage = () => {
     const [isLoading, setIsLoadng] = React.useState<boolean>(false);
@@ -87,28 +89,14 @@ const HomePage = () => {
                     padding: '60px 10px 0 10px',
                 }}
             >
-                {/* <Row style={{ height: '100%' }}>
-                    <Col style={{ height: '100%', padding: '60px 20px 100px 80px' }} span={14}>
+                <Row justify="center" style={{ height: '100%' }}>
+                    <Col style={{ height: '100%', padding: '60px 20px 100px 80px' }} span={16}>
                         <p className="gx-text-center gx-mb-5" style={{ fontSize: '20px', fontWeight: 'bold' }}>
-                            Thống kê khách hàng theo Tour
+                            Thống kê đánh giá theo Tour
                         </p>
                         <ChartColumn />
                     </Col>
-                    <Col span={10}>
-                        <Row style={{ height: '100%' }}>
-                            <Col span={24} style={{ display: 'flex', alignItems: 'center', justifyContent: 'start' }}>
-                                <div style={{ height: '200px' }}>
-                                    <Chart1 />
-                                </div>
-                            </Col>
-                            <Col span={24} style={{ display: 'flex', alignItems: 'center', justifyContent: 'start' }}>
-                                <div style={{ height: '200px' }}>
-                                    <Chart1 />
-                                </div>
-                            </Col>
-                        </Row>
-                    </Col>
-                </Row> */}
+                </Row>
                 {/* content ở đây nè */}
             </div>
         </div>

@@ -181,7 +181,7 @@ const CategoryPage = () => {
                 }
             />
 
-            <ModalComponent modalVisible={visible} title="Thêm danh mục">
+            <ModalComponent modalVisible={visible} title={id ? 'Sửa danh mục' : 'Thêm danh mục'}>
                 <FormComponent form={form} onSubmit={onSubmitForm}>
                     <FormItemComponent
                         rules={[

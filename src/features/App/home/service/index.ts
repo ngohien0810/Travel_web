@@ -4,4 +4,7 @@ export const homeService = {
     getData: () => {
         return AxiosClient.get('/report');
     },
+    getReportTourByFeed: () => {
+        return AxiosClient.get('/reportTourByFeed');
+    },
 };

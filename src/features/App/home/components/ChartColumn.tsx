@@ -1,34 +1,34 @@
 import { Bar } from '@ant-design/plots';
+import React from 'react';
+import { homeService } from '../service';
 
 const ChartColumn = () => {
-    const data = [
-        {
-            year: 'Tour 1',
-            value: 38,
-        },
-        {
-            year: 'Tour 2',
-            value: 52,
-        },
-        {
-            year: 'Tour 3',
-            value: 61,
-        },
-        {
-            year: 'Tour 4',
-            value: 145,
-        },
-    ];
+    const [reports, setReports] = React.useState<any>([]);
+
+    const convertData = reports.map((item: any) => {
+        return {
+            tour: item.Code,
+            value: item?.feedbacks?.length,
+        };
+    });
+
     const config: any = {
-        data,
+        data: convertData,
         xField: 'value',
-        yField: 'year',
-        seriesField: 'year',
+        yField: 'tour',
+        seriesField: 'value',
         legend: {
             position: 'bottom',
         },
     };
+
+    React.useEffect(() => {
+        homeService.getReportTourByFeed().then((res) => {
+            setReports(res);
+        });
+    }, []);
+
     return <Bar appendPadding={[20, 0]} {...config} />;
 };
 
-export default ChartColumn;
+export default React.memo(ChartColumn);
