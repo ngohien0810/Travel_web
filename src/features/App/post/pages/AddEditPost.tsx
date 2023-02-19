@@ -271,16 +271,14 @@ const AddEditPost = () => {
                                             Chọn làm tin tức nổi bật
                                         </Checkbox>
                                     )}
-                                    {location?.state?.id && (
-                                        <Checkbox
-                                            checked={isHome === 1 ? true : false}
-                                            onChange={(e: any) => {
-                                                setIsHome(e.target.checked ? 1 : 0);
-                                            }}
-                                        >
-                                            Hiển thị ở trang chủ
-                                        </Checkbox>
-                                    )}
+                                    <Checkbox
+                                        checked={isHome === 1 ? true : false}
+                                        onChange={(e: any) => {
+                                            setIsHome(e.target.checked ? 1 : 0);
+                                        }}
+                                    >
+                                        Hiển thị ở trang chủ
+                                    </Checkbox>
                                 </CustomCol>
                                 <Col span={24} style={{ marginTop: 20 }}>
                                     <p>

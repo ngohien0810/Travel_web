@@ -147,7 +147,7 @@ const TourDetail = (props: ITourDetail) => {
     const deleteTour = async (id: number) => {
         try {
             const res = await tourService.deleteTour(id);
-            if (res) {
+            if (res?.status) {
                 openNotificationWithIcon('success', 'Thành công', 'Xoá tour thành công!');
                 getTours();
             } else {
@@ -255,7 +255,7 @@ const TourDetail = (props: ITourDetail) => {
                         <Descriptions.Item label="Giá tour(Trẻ em)">
                             {currencyFormat(record.TourPrice / 2) || '--'}
                         </Descriptions.Item>
-                        <Descriptions.Item label="Thời gian">{record.numberDestination || '--'}</Descriptions.Item>
+                        <Descriptions.Item label="Thời gian">{record?.RangeTour || '--'}</Descriptions.Item>
                         <Descriptions.Item label="Lượt đánh giá">{record.feedbacks.length || '--'}</Descriptions.Item>
                         <Descriptions.Item label="Ngày khởi hành">{record.DateStartTour || '--'}</Descriptions.Item>
                         <Descriptions.Item label="Trạng thái">
