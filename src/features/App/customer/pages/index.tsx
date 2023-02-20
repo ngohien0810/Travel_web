@@ -86,33 +86,33 @@ const CustomerPage = () => {
             },
         },
 
-        // {
-        //     title: <b>Chi tiết</b>,
-        //     dataIndex: '',
-        //     width: 100,
-        //     render: (_: any, record: any) => {
-        //         return (
-        //             <>
-        //                 <Popconfirm
-        //                     title="Bạn có chắc chắn muốn xoá người dùng này?"
-        //                     placement="top"
-        //                     // onConfirm={() => deleteNews(record.id)}
-        //                     okText="Xoá"
-        //                     cancelText="Đóng"
-        //                     okButtonProps={{
-        //                         type: 'primary',
-        //                         danger: true,
-        //                     }}
-        //                     style={{ background: 'red' }}
-        //                 >
-        //                     <a style={{ color: 'red' }} href="#">
-        //                         <IconAntd icon="DeleteOutlined" fontSize={18} marginLeft={20} />
-        //                     </a>
-        //                 </Popconfirm>
-        //             </>
-        //         );
-        //     },
-        // },
+        {
+            title: <b>Chi tiết</b>,
+            dataIndex: '',
+            width: 100,
+            render: (_: any, record: any) => {
+                return (
+                    <>
+                        <Popconfirm
+                            title="Bạn có chắc chắn muốn xoá người dùng này?"
+                            placement="top"
+                            // onConfirm={() => deleteNews(record.id)}
+                            okText="Xoá"
+                            cancelText="Đóng"
+                            okButtonProps={{
+                                type: 'primary',
+                                danger: true,
+                            }}
+                            style={{ background: 'red' }}
+                        >
+                            <a style={{ color: 'red' }} href="#">
+                                <IconAntd icon="DeleteOutlined" fontSize={18} marginLeft={20} />
+                            </a>
+                        </Popconfirm>
+                    </>
+                );
+            },
+        },
     ];
 
     const [isOpenModal, setIsOpenModal] = React.useState<boolean>(false);

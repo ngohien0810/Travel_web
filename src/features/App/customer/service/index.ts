@@ -7,4 +7,7 @@ export const customerService = {
     changeStatus: (id: number, payload: any) => {
         return AxiosClient.patch(`/users/${id}`, payload);
     },
+    deleteCustomer: (id: number) => {
+        return AxiosClient.delete(`/users/${id}`);
+    },
 };
