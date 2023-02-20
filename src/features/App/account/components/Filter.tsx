@@ -43,7 +43,7 @@ const Filter = (props: IFilter) => {
                     }}
                 />
             </Col> */}
-            <Col span={8}>
+            {/* <Col span={8}>
                 <Select
                     style={{ width: '100%' }}
                     allowClear
@@ -59,7 +59,7 @@ const Filter = (props: IFilter) => {
                     <Select.Option value={1}>Hoạt động</Select.Option>
                     <Select.Option value={0}>Ngừng hoạt động</Select.Option>
                 </Select>
-            </Col>
+            </Col> */}
             {/* <Col span={8}>
                 <DatePicker.RangePicker
                     style={{ width: '100%' }}

@@ -160,7 +160,7 @@ const AccountPage = () => {
         try {
             setIsLoading(true);
             const res = await accountService.deleteAccount(id);
-            if (res) {
+            if (res.status) {
                 openNotificationWithIcon('success', 'Thành công', 'Xoá thái tài khoản thành công!');
                 getListAccounts();
             } else {
