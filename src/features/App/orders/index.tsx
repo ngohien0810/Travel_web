@@ -3,12 +3,26 @@ import React from 'react';
 import ButtonAdd from '@/components/Button/ButtonAdd';
 import TableComponent from '@/components/TableComponents';
 import Container from '@/container/Container';
-import { Input, PageHeader, Tag, Switch, Row, Col, Select, DatePicker } from 'antd';
+import {
+    Input,
+    PageHeader,
+    Tag,
+    Switch,
+    Row,
+    Col,
+    Select,
+    DatePicker,
+    Space,
+    Button,
+    Popconfirm,
+    Descriptions,
+} from 'antd';
 import Icon from '@ant-design/icons';
 // import { categoryService } from './service';
 import moment from 'moment';
 import { orderService } from './service';
 import { Notification } from '@/utils';
+import IconAntd from '@/components/IconAntd';
 
 const OrdersPage = () => {
     const [orders, setOrders] = React.useState([]);
@@ -32,6 +46,8 @@ const OrdersPage = () => {
             title: <b>STT</b>,
             dataIndex: 'id',
             align: 'center',
+            render: (row: any, record: any, index: number) => (page === 1 ? ++index : (page - 1) * 10 + ++index),
+
             // render: (text: any, record: any, index: any) => (
             //     <td id={record.id}>{(paging.current - 1) * paging.pageSize + index + 1}</td>
             // ),
@@ -55,7 +71,7 @@ const OrdersPage = () => {
             render: (value: any, row: any) => row?.customer?.Phone,
         },
         {
-            title: <b>Hình thức thanh toán</b>,
+            title: <b>HT thanh toán</b>,
             dataIndex: 'PaymentMethod',
             render: (value: any) =>
                 value == 1 ? <Tag color="processing">Tiền mặt</Tag> : <Tag color="processing">Chuyển khoản</Tag>,
@@ -65,10 +81,19 @@ const OrdersPage = () => {
             dataIndex: 'TotalPrice',
         },
         {
-            title: <b>Trạng thái đơn hàng</b>,
+            title: <b>Trạng thái</b>,
             dataIndex: 'StatusOrder',
+            align: 'center',
             render: (value: number, record: any) => {
                 return <Switch checked={!!value} onChange={(value) => changeStatus(record.id, value)} />;
+            },
+        },
+        {
+            title: <b>Trạng thái tour</b>,
+            dataIndex: 'tourStatus',
+            align: 'center',
+            render: (value: number, record: any) => {
+                return !value ? <Tag color="processing">Đang chờ</Tag> : <Tag color="success">Hoàn thành</Tag>;
             },
         },
         {
@@ -78,10 +103,30 @@ const OrdersPage = () => {
                 return moment(value).format('DD/MM/YYYY');
             },
         },
-        // {
-        //     title: <b>Chi tiết</b>,
-        //     dataIndex: 'title',
-        // },
+        {
+            title: <b>Thao tác</b>,
+            dataIndex: 'action',
+            align: 'center',
+            render: (_: any, row: any) => {
+                return (
+                    <Popconfirm
+                        onConfirm={() => {
+                            // categoryService.deleteCategory(row?.id).then((res: any) => {
+                            //     Notification('success', 'Xoá thành công');
+                            //     setCallback(!callback);
+                            // });
+                            orderService.deleteOrder(row?.id).then((res: any) => {
+                                Notification('success', 'Xoá thành công');
+                                setCallback(!callback);
+                            });
+                        }}
+                        title="Bạn có chắc chắn muốn xoá?"
+                    >
+                        <Button icon={<IconAntd icon="DeleteOutlined" />} />
+                    </Popconfirm>
+                );
+            },
+        },
     ];
 
     const changeStatus = (id: any, status: any) => {
@@ -149,6 +194,30 @@ const OrdersPage = () => {
                         showTotalResult
                         columns={columns}
                         dataSource={orders}
+                        expandedRowRender={(record) => (
+                            <div style={{ padding: '10px 60px' }}>
+                                <Descriptions
+                                    labelStyle={{ width: '200px' }}
+                                    title="Thông tin liên hệ"
+                                    bordered
+                                    column={2}
+                                >
+                                    <Descriptions.Item label="Họ tên">
+                                        {record?.contact?.Name || '--'}
+                                    </Descriptions.Item>
+
+                                    <Descriptions.Item label="Số điện thoại">
+                                        {record?.contact?.Phone || '--'}
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Địa chỉ email">
+                                        {record?.contact?.Email || '--'}
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Yêu cầu khác">
+                                        {record?.contact?.Note || '--'}
+                                    </Descriptions.Item>
+                                </Descriptions>
+                            </div>
+                        )}
                         page={page}
                         total={total}
                         onChangePage={(_page) => setPage(_page)}

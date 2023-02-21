@@ -3,26 +3,41 @@ import React from 'react';
 import ButtonAdd from '@/components/Button/ButtonAdd';
 import TableComponent from '@/components/TableComponents';
 import Container from '@/container/Container';
-import { Input, PageHeader, Switch } from 'antd';
+import { Button, Input, PageHeader, Popconfirm, Rate, Switch } from 'antd';
 import Icon from '@ant-design/icons';
 // import { categoryService } from './service';
 import moment from 'moment';
+import { feedbackService } from './service';
+import { Notification } from '@/utils';
+import IconAntd from '@/components/IconAntd';
+import useDebounce from '@/hooks/useDebounce';
 const FeedbackPage = () => {
-    const [categories, setCategories] = React.useState([]);
+    const [callback, setCallback] = React.useState(false);
+    const [total, setTotal] = React.useState(0);
+    const [page, setPage] = React.useState(1);
+    const [search, setSearch] = React.useState('');
+    const debounceSearch = useDebounce(search, 500);
+
+    const [feedbacks, setFeedbacks] = React.useState([]);
     React.useEffect(() => {
-        // categoryService.getListCategory().then((res: any) => {
-        //     setCategories(res.data);
-        // });
-    }, []);
+        feedbackService.get({ page, search: debounceSearch }).then((res: any) => {
+            setFeedbacks(res.data);
+            setTotal(res.totalItems);
+        });
+    }, [callback, debounceSearch]);
+
     const columns: any = [
         {
             width: '60px',
             title: <b>STT</b>,
             dataIndex: 'id',
             align: 'center',
-            // render: (text: any, record: any, index: any) => (
-            //     <td id={record.id}>{(paging.current - 1) * paging.pageSize + index + 1}</td>
-            // ),
+            render: (row: any, record: any, index: number) => (page === 1 ? ++index : (page - 1) * 10 + ++index),
+        },
+        {
+            title: <b>Mã tour</b>,
+            dataIndex: 'tour',
+            render: (value: any, row: any) => row?.tour?.Code,
         },
         {
             title: <b>Tên khách hàng</b>,
@@ -41,14 +56,11 @@ const FeedbackPage = () => {
             dataIndex: 'Note',
         },
         {
-            title: <b>Đánh giá</b>,
+            title: <b>Số sao</b>,
             dataIndex: 'Rate',
-        },
-        {
-            title: <b>Trạng thái</b>,
-            dataIndex: 'isActive',
-            render: (value: number, record: any) => {
-                return <Switch checked={value === 1} onChange={() => record.id} />;
+            align: 'center',
+            render: (value: any) => {
+                return <Rate disabled value={value} />;
             },
         },
         {
@@ -60,7 +72,27 @@ const FeedbackPage = () => {
         },
         {
             title: <b>Chi tiết</b>,
-            dataIndex: 'title',
+            dataIndex: 'action',
+            align: 'center',
+            render: (_: any, row: any) => {
+                return (
+                    <Popconfirm
+                        onConfirm={() => {
+                            // categoryService.deleteCategory(row?.id).then((res: any) => {
+                            //     Notification('success', 'Xoá thành công');
+                            //     setCallback(!callback);
+                            // });
+                            feedbackService.delete(row?.id).then((res: any) => {
+                                Notification('success', 'Xoá thành công');
+                                setCallback(!callback);
+                            });
+                        }}
+                        title="Bạn có chắc chắn muốn xoá?"
+                    >
+                        <Button icon={<IconAntd icon="DeleteOutlined" />} />
+                    </Popconfirm>
+                );
+            },
         },
     ];
     return (
@@ -73,21 +105,21 @@ const FeedbackPage = () => {
                         style={{ width: '360px', margin: 0 }}
                         placeholder="Tên khách hàng, số điện thoại"
                         addonAfter={<Icon type="close-circle-o" />}
-                        // value={search}
-                        // onChange={(e: any) => {
-                        //     setSearch(e.target.value);
-                        // }}
+                        value={search}
+                        onChange={(e: any) => {
+                            setSearch(e.target.value);
+                        }}
                     />
                 }
                 contentComponent={
                     <TableComponent
                         showTotalResult
                         columns={columns}
-                        dataSource={categories}
-                        // page={params.page}
-                        // total={paging.total}
+                        dataSource={feedbacks}
+                        page={page}
+                        total={total}
                         // loading={isLoading}
-                        // onChangePage={(_page) => setParams({ ...params, page: _page })}
+                        onChangePage={(_page) => setPage(_page)}
                     />
                 }
             />

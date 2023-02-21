@@ -7,4 +7,7 @@ export const orderService = {
     changeStatus: (id: any, status: any) => {
         return AxiosClient.patch('/orders/' + id, { StatusOrder: status });
     },
+    deleteOrder: (id: any) => {
+        return AxiosClient.delete('/orders/' + id);
+    },
 };
