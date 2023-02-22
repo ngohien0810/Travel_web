@@ -5,14 +5,13 @@ import { openNotificationWithIcon } from '@/components/Notification';
 import TableComponent from '@/components/TableComponents';
 import Container from '@/container/Container';
 import useDebounce from '@/hooks/useDebounce';
-import { message, Modal, PageHeader, Popconfirm, Spin, Switch, Table } from 'antd';
+import { message, Modal, PageHeader, Popconfirm, Tag } from 'antd';
 import moment from 'moment';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IPaging } from '../../tour/pages';
 import AddEditModal from '../components/AddEditModal';
 import Filter from '../components/Filter';
-import { ICustomer, IParams } from '../components/Interface';
+import { ICustomer } from '../components/Interface';
 import { accountService } from '../service';
 
 const AccountPage = () => {
@@ -39,6 +38,12 @@ const AccountPage = () => {
             dataIndex: 'address',
         },
         {
+            title: <b>Loại tài khoản</b>,
+            dataIndex: 'Role',
+            align: 'center',
+            render: (value: any) => (value == 1 ? <Tag color="error">Admin</Tag> : <Tag color="blue">Sub Admin</Tag>),
+        },
+        {
             title: <b>Ngày tạo</b>,
             dataIndex: 'date',
             render: (value: string) => moment(value).format('DD/MM/YYYY'),
@@ -48,6 +53,7 @@ const AccountPage = () => {
             title: <b>Chi tiết</b>,
             dataIndex: '',
             width: 120,
+            align: 'center',
             render: (_: any, record: any) => {
                 return (
                     <>
@@ -127,6 +133,7 @@ const AccountPage = () => {
                         email: item?.Email,
                         date: item?.CreatedDate,
                         status: item?.Status,
+                        Role: item?.Role,
                     };
                 });
                 setListAccounts(data);

@@ -2,12 +2,14 @@ import LocalStorage from '@/apis/LocalStorage';
 import { AuthRoutes, PrivateRoutes, routerPage } from '@/config/routes';
 import PageLayout from '@/layout';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { useLocation, useNavigate, useRoutes } from 'react-router-dom';
 
 // config routes
 const MainPage = ({ role }: { role: string }) => {
     const navigate = useNavigate();
     const { pathname } = useLocation();
+    const userInfor = useSelector((state: any) => state?.root?.user);
 
     // chỗ này để cấu hình route cho từng role
     let element = useRoutes(LocalStorage.getLogged() ? PrivateRoutes : AuthRoutes);
@@ -24,7 +26,7 @@ const MainPage = ({ role }: { role: string }) => {
             setLogged(true);
 
             if (pathname === routerPage.register || pathname === routerPage.login) {
-                return navigate('/');
+                return userInfor?.Role === 1 ? navigate('/') : navigate('/category');
             }
             // navigate(pathname);
         } else {

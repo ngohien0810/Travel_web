@@ -24,7 +24,7 @@ const FeedbackPage = () => {
             setFeedbacks(res.data);
             setTotal(res.totalItems);
         });
-    }, [callback, debounceSearch]);
+    }, [callback, debounceSearch, page]);
 
     const columns: any = [
         {

@@ -53,3 +53,32 @@ export const items: any = [
         icon: <IconAntd icon="UserOutlined" />,
     },
 ];
+
+export const itemsSubAdmin: any = [
+    {
+        label: 'Danh mục',
+        key: 'category',
+        icon: <IconAntd icon="ProfileOutlined" />,
+    },
+    {
+        label: 'Bài viết',
+        key: 'posts',
+        icon: <IconAntd icon="ReadOutlined" />,
+    },
+
+    {
+        label: 'Quản lý tour',
+        key: 'tours',
+        icon: <MapIcon />,
+    },
+    {
+        label: 'Phản hồi dịch vụ',
+        key: 'feedback',
+        icon: <IconAntd icon="ContactsOutlined" />,
+    },
+    // {
+    //     label: 'Khách hàng',
+    //     key: 'customers',
+    //     icon: <IconAntd icon="TeamOutlined" />,
+    // },
+];

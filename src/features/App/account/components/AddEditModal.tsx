@@ -1,13 +1,10 @@
 import CustomLoading from '@/components/Loading';
 import { openNotificationWithIcon } from '@/components/Notification';
-import UploadComponent from '@/components/UploadComponent';
-import { EMAIL_REGEX, EMAIL_REGEX_2, NAME_REGEX, PHONE_REGEX } from '@/constant';
-import { Button, Col, DatePicker, Form, Input, Modal, Row } from 'antd';
-import moment from 'moment';
+import { EMAIL_REGEX, EMAIL_REGEX_2, PHONE_REGEX } from '@/constant';
+import { Button, Form, Input, Modal, Row, Select } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 import { accountService } from '../service';
-import { IAccountDetail } from './Interface';
 
 interface IAddEditModal {
     isOpenModal: boolean;
@@ -24,7 +21,7 @@ const AddEditModal = (props: any) => {
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
     const onFinish = async (values: any) => {
-        const { name, phone, address, email, password } = values;
+        const { name, phone, address, email, password, Role } = values;
         try {
             setIsLoading(true);
             if (!currentId) {
@@ -35,6 +32,7 @@ const AddEditModal = (props: any) => {
                     Address: address,
                     Password: password,
                     Email: email,
+                    Role: Role,
                 };
                 const res: any = await accountService.addAccount(payload);
                 if (res) {
@@ -53,6 +51,7 @@ const AddEditModal = (props: any) => {
                     Phone: phone,
                     Address: address,
                     Email: email,
+                    Role: Role,
                 };
                 const res = await accountService.updateAccount(currentId, payload);
                 if (res) {
@@ -79,6 +78,7 @@ const AddEditModal = (props: any) => {
                 email: recordUpdate?.email,
                 address: recordUpdate?.address,
                 phone: recordUpdate?.phone,
+                Role: recordUpdate?.Role,
             });
         }
     }, [currentId, recordUpdate]);
@@ -93,6 +93,7 @@ const AddEditModal = (props: any) => {
                     setIsOpenModal(false);
                     setCurrentId(undefined);
                 }}
+                destroyOnClose
             >
                 <Form
                     name="basic"
@@ -165,6 +166,16 @@ const AddEditModal = (props: any) => {
                         rules={[{ required: true, message: 'Vui lòng chọn địa chỉ!' }]}
                     >
                         <Input allowClear placeholder="Nhập địa chỉ chi tiết" />
+                    </CustomFormItem>
+                    <CustomFormItem
+                        label="Loại tài khoản"
+                        name="Role"
+                        rules={[{ required: true, message: 'Vui lòng chọn loại tài khoản!' }]}
+                    >
+                        <Select placeholder="Chọn loại tài khoản">
+                            <Select.Option value={1}>Admin</Select.Option>
+                            <Select.Option value={2}>Sub Admin</Select.Option>
+                        </Select>
                     </CustomFormItem>
 
                     {!currentId && (

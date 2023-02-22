@@ -5,8 +5,9 @@ import { Image, Menu, Row } from 'antd';
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { items } from './Sidebar.Menu';
+import { items, itemsSubAdmin } from './Sidebar.Menu';
 import logo from '../../assets/logo.png';
+import { useSelector } from 'react-redux';
 
 const SidebarContent = ({
     collapsed,
@@ -17,6 +18,7 @@ const SidebarContent = ({
 }) => {
     const location = useLocation();
     const navigate = useNavigate();
+    const userInfor = useSelector((state: any) => state?.root?.user);
 
     const selectedKeys = location.pathname.substr(1);
     const defaultOpenKeys = selectedKeys.split('/')[1] || 'dashboard';
@@ -47,7 +49,7 @@ const SidebarContent = ({
                     defaultOpenKeys={[defaultOpenKeys]}
                     selectedKeys={[selectedKeys]}
                     mode="inline"
-                    items={items}
+                    items={userInfor?.Role == 1 ? items : itemsSubAdmin}
                     onClick={(e) => navigate('/' + e.key)}
                 />
             </CustomScrollbars>

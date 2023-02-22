@@ -6,7 +6,7 @@ import ErrorBoundary from '@/features/Error/ErrorBoundary';
 import useWindowSize from '@/hooks/useWindowSize';
 import SideBar from '@/layout/SideBar';
 import { wait } from '@/utils';
-import { Dropdown, Layout, Menu, Popover, Row, Space } from 'antd';
+import { Dropdown, Layout, Menu, Popover, Row, Space, Tag } from 'antd';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -34,7 +34,7 @@ const PageLayout = (PageComponent: React.JSXElementConstructor<any>) => {
         const menu = (
             <div>
                 <ul className="gx-user-popover">
-                    <li>Thông tin cá nhân</li>
+                    {/* <li>Thông tin cá nhân</li> */}
                     <li
                         onClick={() => {
                             LocalStorage.removeLogged();
@@ -61,15 +61,20 @@ const PageLayout = (PageComponent: React.JSXElementConstructor<any>) => {
                     {/* top content */}
                     {width < TAB_SIZE && <Topbar handleCallbackCollapseMobile={handleCallbackCollapseMobile} />}
                     <TopBar>
-                        <Popover content={menu} placement="bottomRight">
-                            <WrapperInfoStyled>
-                                <strong>Xin chào, {userInfor?.Username}</strong>
-                                <ImageAvatarStyled
-                                    src="https://icons.iconarchive.com/icons/iconka/easter-egg-bunny/256/red-angel-icon.png"
-                                    alt="avatar"
-                                />
-                            </WrapperInfoStyled>
-                        </Popover>
+                        <Row style={{ width: '100%' }} justify="space-between" align="middle">
+                            <Tag color="#3598E7" style={{ fontSize: '15px', padding: '4px 12px', fontWeight: '600' }}>
+                                {userInfor?.Role == 1 ? 'Quản trị viên' : 'Cộng tác viên'}
+                            </Tag>
+                            <Popover content={menu} placement="bottomRight">
+                                <WrapperInfoStyled>
+                                    <strong>Xin chào, {userInfor?.Username}</strong>
+                                    <ImageAvatarStyled
+                                        src="https://icons.iconarchive.com/icons/iconka/easter-egg-bunny/256/red-angel-icon.png"
+                                        alt="avatar"
+                                    />
+                                </WrapperInfoStyled>
+                            </Popover>
+                        </Row>
                         {/* <div className="account-block">
                             <Dropdown overlay={menu}>
                                 <a onClick={(e) => e.preventDefault()}>
@@ -118,7 +123,6 @@ const TopBar = styled.div`
     width: 100%;
     height: 60px;
     display: flex;
-    justify-content: end;
     align-items: center;
     padding: 0 30px;
 

@@ -16,11 +16,11 @@ const Topbar = ({ handleCallbackCollapseMobile }: { handleCallbackCollapseMobile
         <Menu
             style={{ width: 250 }}
             items={[
-                {
-                    key: '1',
-                    label: 'Thông tin cá nhân',
-                    icon: <IconAntd icon="UserOutlined" fontSize={16} marginRight={14} />,
-                },
+                // {
+                //     key: '1',
+                //     label: 'Thông tin cá nhân',
+                //     icon: <IconAntd icon="UserOutlined" fontSize={16} marginRight={14} />,
+                // },
                 {
                     key: '2',
                     label: 'Đăng xuất',
