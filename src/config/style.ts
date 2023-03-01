@@ -109,6 +109,7 @@ const GlobalStyle = createGlobalStyle`
 .ant-popover.ant-popconfirm.ant-popover-placement-right {
   z-index: 50;
 }
+
 `;
 
 export default GlobalStyle;

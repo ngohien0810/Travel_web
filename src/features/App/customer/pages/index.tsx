@@ -96,7 +96,12 @@ const CustomerPage = () => {
                         <Popconfirm
                             title="Bạn có chắc chắn muốn xoá người dùng này?"
                             placement="top"
-                            // onConfirm={() => deleteNews(record.id)}
+                            onConfirm={() => {
+                                customerService.deleteCustomer(record.id).then(() => {
+                                    setCallback(!callback);
+                                    openNotificationWithIcon('success', 'Thành công', 'Xoá thành công khách hàng!');
+                                });
+                            }}
                             okText="Xoá"
                             cancelText="Đóng"
                             okButtonProps={{
@@ -125,6 +130,7 @@ const CustomerPage = () => {
     const [currentPage, setCurrentPage] = React.useState<number>(1);
     const [total, setTotal] = React.useState<any>(0);
     const [page, setPage] = React.useState<number>(1);
+    const [callback, setCallback] = React.useState(false);
     const [params, setParams] = React.useState<any>({
         search: '',
         page: 1,
@@ -193,7 +199,7 @@ const CustomerPage = () => {
 
     React.useEffect(() => {
         getListCustomers();
-    }, [params]);
+    }, [params, callback]);
 
     return (
         <>

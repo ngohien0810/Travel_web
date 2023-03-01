@@ -7,4 +7,7 @@ export const feedbackService = {
     delete: (id?: any) => {
         return AxiosClient.delete('/feedback/' + id);
     },
+    changeFeedbackStatus: (id: number, isActive: any) => {
+        return AxiosClient.patch(`/feedback/${id}`, { isActive });
+    },
 };

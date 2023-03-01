@@ -59,8 +59,9 @@ const FeedbackPage = () => {
             title: <b>Số sao</b>,
             dataIndex: 'Rate',
             align: 'center',
+            width: 200,
             render: (value: any) => {
-                return <Rate disabled value={value} />;
+                return <Rate style={{ fontSize: 13 }} disabled value={value} />;
             },
         },
         {
@@ -71,7 +72,25 @@ const FeedbackPage = () => {
             },
         },
         {
-            title: <b>Chi tiết</b>,
+            width: '160px',
+            align: 'center',
+            title: <b>Trạng thái</b>,
+            dataIndex: 'isActive',
+            render: (value: number, record: any) => {
+                return (
+                    <Switch
+                        checked={!!value}
+                        onChange={() =>
+                            feedbackService.changeFeedbackStatus(record.id, value === 1 ? 0 : 1).then(() => {
+                                setCallback(!callback);
+                            })
+                        }
+                    />
+                );
+            },
+        },
+        {
+            title: '',
             dataIndex: 'action',
             align: 'center',
             render: (_: any, row: any) => {
